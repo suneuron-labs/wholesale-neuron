@@ -1,0 +1,22 @@
+query CartValidationsGenerateRunInput($customerTags: [String!]) {
+  cart {
+    buyerIdentity {
+      customer {
+        hasAnyTag(tags: $customerTags)
+      }
+    }
+    cost {
+      subtotalAmount {
+        amount
+      }
+    }
+  }
+  buyerJourney {
+    step
+  }
+  validation {
+    metafield(namespace: "$app:b2b_toolkit", key: "settings") {
+      value
+    }
+  }
+}

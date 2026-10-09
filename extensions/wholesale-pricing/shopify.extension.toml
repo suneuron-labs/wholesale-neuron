@@ -1,0 +1,26 @@
+api_version = "2026-07"
+
+[[extensions]]
+name = "t:name"
+handle = "wholesale-pricing"
+type = "function"
+uid = "0a427c64-4a1a-41c7-f518-d05492f3994c91180ad4"
+description = "t:description"
+
+  [[extensions.targeting]]
+  target = "cart.lines.discounts.generate.run"
+  input_query = "src/cart_lines_discounts_generate_run.graphql"
+  export = "cart-lines-discounts-generate-run"
+
+  [[extensions.targeting]]
+  target = "cart.delivery-options.discounts.generate.run"
+  input_query = "src/cart_delivery_options_discounts_generate_run.graphql"
+  export = "cart-delivery-options-discounts-generate-run"
+
+  [extensions.build]
+  command = ""
+  path = "dist/function.wasm"
+
+  [extensions.input.variables]
+  namespace = "$app:b2b_toolkit"
+  key = "function_variables"

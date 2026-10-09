@@ -1,0 +1,28 @@
+{
+  "payload": {
+    "export": "cart-lines-discounts-generate-run",
+    "target": "cart.lines.discounts.generate.run",
+    "input": {
+      "cart": {
+        "buyerIdentity": {
+          "customer": {
+            "hasAnyTag": false
+          }
+        },
+        "lines": [
+          {
+            "id": "gid://shopify/CartLine/0"
+          }
+        ]
+      },
+      "discount": {
+        "metafield": {
+          "value": "{\"customerTag\":\"wholesale\",\"discountPercent\":20,\"minimumOrderValue\":500,\"paymentMethodName\":\"Net 30\"}"
+        }
+      }
+    },
+    "output": {
+      "operations": []
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "payload": {
+    "export": "cart-lines-discounts-generate-run",
+    "target": "cart.lines.discounts.generate.run",
+    "input": {
+      "cart": {
+        "buyerIdentity": {
+          "customer": {
+            "hasAnyTag": true
+          }
+        },
+        "lines": [
+          {
+            "id": "gid://shopify/CartLine/0"
+          }
+        ]
+      },
+      "discount": {
+        "metafield": {
+          "value": "{\"customerTag\":\"wholesale\",\"discountPercent\":20,\"minimumOrderValue\":500,\"paymentMethodName\":\"Net 30\"}"
+        }
+      }
+    },
+    "output": {
+      "operations": [
+        {
+          "productDiscountsAdd": {
+            "selectionStrategy": "ALL",
+            "candidates": [
+              {
+                "message": "20% off",
+                "targets": [
+                  {
+                    "cartLine": {
+                      "id": "gid://shopify/CartLine/0"
+                    }
+                  }
+                ],
+                "value": {
+                  "percentage": {
+                    "value": "20"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

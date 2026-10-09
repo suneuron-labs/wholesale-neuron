@@ -1,0 +1,42 @@
+{
+  "payload": {
+    "export": "cart-validations-generate-run",
+    "target": "cart.validations.generate.run",
+    "input": {
+      "cart": {
+        "buyerIdentity": {
+          "customer": {
+            "hasAnyTag": true
+          }
+        },
+        "cost": {
+          "subtotalAmount": {
+            "amount": "400.00"
+          }
+        }
+      },
+      "buyerJourney": {
+        "step": "CHECKOUT_INTERACTION"
+      },
+      "validation": {
+        "metafield": {
+          "value": "{\"customerTag\":\"wholesale\",\"discountPercent\":20,\"minimumOrderValue\":500,\"paymentMethodName\":\"Net 30\"}"
+        }
+      }
+    },
+    "output": {
+      "operations": [
+        {
+          "validationAdd": {
+            "errors": [
+              {
+                "message": "Wholesale orders require a minimum spend of $500.",
+                "target": "$.cart"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

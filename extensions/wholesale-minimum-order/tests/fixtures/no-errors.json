@@ -1,0 +1,31 @@
+{
+  "payload": {
+    "export": "cart-validations-generate-run",
+    "target": "cart.validations.generate.run",
+    "input": {
+      "cart": {
+        "buyerIdentity": {
+          "customer": {
+            "hasAnyTag": false
+          }
+        },
+        "cost": {
+          "subtotalAmount": {
+            "amount": "100.00"
+          }
+        }
+      },
+      "buyerJourney": {
+        "step": "CHECKOUT_INTERACTION"
+      },
+      "validation": {
+        "metafield": {
+          "value": "{\"customerTag\":\"wholesale\",\"discountPercent\":20,\"minimumOrderValue\":500,\"paymentMethodName\":\"Net 30\"}"
+        }
+      }
+    },
+    "output": {
+      "operations": []
+    }
+  }
+}

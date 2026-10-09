@@ -1,0 +1,17 @@
+query CartInput($customerTags: [String!]) {
+  cart {
+    buyerIdentity {
+      customer {
+        hasAnyTag(tags: $customerTags)
+      }
+    }
+    lines {
+      id
+    }
+  }
+  discount {
+    metafield(namespace: "$app:b2b_toolkit", key: "settings") {
+      value
+    }
+  }
+}

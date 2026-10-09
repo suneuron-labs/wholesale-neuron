@@ -1,0 +1,25 @@
+api_version = "2026-07"
+
+[[extensions]]
+name = "t:name"
+handle = "wholesale-payment-methods"
+type = "function"
+uid = "b2040339-4385-d860-d1a5-ab05dc0b4cb6755727a3"
+description = "t:description"
+
+  [[extensions.targeting]]
+  target = "cart.payment-methods.transform.run"
+  input_query = "src/cart_payment_methods_transform_run.graphql"
+  export = "cart-payment-methods-transform-run"
+
+  [extensions.build]
+  command = ""
+  path = "dist/function.wasm"
+
+  [extensions.input.variables]
+  namespace = "$app:b2b_toolkit"
+  key = "function_variables"
+
+  [extensions.ui.paths]
+  create = "/"
+  details = "/"

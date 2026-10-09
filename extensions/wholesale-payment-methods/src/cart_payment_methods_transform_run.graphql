@@ -1,0 +1,18 @@
+query CartPaymentMethodsTransformRunInput($customerTags: [String!]) {
+  cart {
+    buyerIdentity {
+      customer {
+        hasAnyTag(tags: $customerTags)
+      }
+    }
+  }
+  paymentMethods {
+    id
+    name
+  }
+  paymentCustomization {
+    metafield(namespace: "$app:b2b_toolkit", key: "settings") {
+      value
+    }
+  }
+}
