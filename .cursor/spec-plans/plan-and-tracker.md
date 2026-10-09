@@ -1,6 +1,6 @@
 # Wholesale & B2B Toolkit — plan and tracker
 
-Last updated: 2026-10-06. Status: **Vercel URL set**. App URL `https://wholesale-neuron.vercel.app`. Full suite green. Next: set `SHOPIFY_APP_URL` on Vercel, push config to Partner Dashboard / GitHub, then verify install + billing in production.
+Last updated: 2026-10-09. Status: **Vercel deploy live** at `https://wholesale-neuron.vercel.app`. GitHub is `suneuron-labs/wholesale-neuron` with author `suneuron-labs`. 2026-10-09: first Vercel build warned that `vercelPreset()` was missing; closed by adding `@vercel/react-router` and `react-router.config.ts`. Next: reinstall on the dev store and run the production billing check.
 
 ## Locked decisions (2026-09-28)
 
@@ -272,7 +272,8 @@ Checked against the code on 2026-10-02. Automated column is `npm test` (59 passe
 | Partner app | Created. Name **WholesaleNeuron**. Org **SUNEURON PTE. LTD.** (`236696948`). Client ID `887f5834812eeebb06938e6c3f5de5a2`. Dashboard: https://dev.shopify.com/dashboard/236696948 |
 | Distribution | Public, set by the user 2026-09-29. Billing API is allowed on this client ID |
 | Scaffold | React Router template. `application_url` is `https://wholesale-neuron.vercel.app`. Scopes are `write_discounts`, `write_validations`, `write_payment_customizations`. Demo product scopes and metaobjects removed |
-| Vercel production | URL live: `https://wholesale-neuron.vercel.app`. Env + Partner Dashboard URL sync still required |
+| Vercel production | URL live: `https://wholesale-neuron.vercel.app`. `vercelPreset()` added 2026-10-09 after the build warning |
+| Git author | `suneuron-labs` / `sunil.suneuron@gmail.com` as of the 2026-10-09 root commit |
 | Slice 0 | Done 2026-09-29. Billing helper $29 / 7 days, privacy webhooks, uninstall, empty settings page, route error boundary. Uninstall confirmed on the store |
 | Slice 1 | Done 2026-09-29. Form, validation, app-installation `metafieldsSet`, `userErrors`. User confirmed **Settings saved** on `suneuron-dev-wholesale` |
 | Slice 2 | Done 2026-09-29. Idempotent discount, validation, and payment owners. Later saves update the same three records |
