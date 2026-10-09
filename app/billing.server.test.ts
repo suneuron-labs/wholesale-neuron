@@ -10,6 +10,7 @@ import {
   isPublicDistributionBillingError,
   requireAppSubscription,
   shouldRequestBilling,
+  subscriptionIsTest,
 } from "./billing.server";
 
 describe("billing plan", () => {
@@ -182,5 +183,32 @@ describe("requireAppSubscription", () => {
       isTest: false,
       trialDays: 7,
     });
+  });
+
+  it("requests a test charge in production when the shop is a development store", async () => {
+    const request = vi.fn().mockResolvedValue(new Response(null, { status: 302 }));
+    const billing = {
+      check: vi.fn(),
+      request,
+      require: vi.fn(
+        async (options: {
+          onFailure: (error: unknown) => Promise<Response>;
+        }) => {
+          await options.onFailure(new Error("No active payment"));
+        },
+      ),
+    };
+
+    await requireAppSubscription(billing, { NODE_ENV: "production" }, {
+      partnerDevelopment: true,
+    });
+
+    expect(request).toHaveBeenCalledWith({
+      plan: BASIC_MONTHLY_PLAN,
+      isTest: true,
+      trialDays: 7,
+    });
+    expect(subscriptionIsTest({ NODE_ENV: "production" }, true)).toBe(true);
+    expect(subscriptionIsTest({ NODE_ENV: "production" }, false)).toBe(false);
   });
 });

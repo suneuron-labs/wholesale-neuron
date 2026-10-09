@@ -1,7 +1,10 @@
 import { Form, isRouteErrorResponse, useActionData, useLoaderData, useRouteError } from "react-router";
 import type { ActionFunctionArgs, HeadersFunction, LoaderFunctionArgs } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
-import { requireAppSubscription } from "../billing.server";
+import {
+  requireAppSubscription,
+  shopIsPartnerDevelopment,
+} from "../billing.server";
 import db from "../db.server";
 import { syncFunctionOwners } from "../function-owners.server";
 import {
@@ -14,7 +17,10 @@ import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin, billing, session } = await authenticate.admin(request);
-  const subscription = await requireAppSubscription(billing);
+  const partnerDevelopment = await shopIsPartnerDevelopment(admin);
+  const subscription = await requireAppSubscription(billing, process.env, {
+    partnerDevelopment,
+  });
   const owners = await db.appSettings.findUnique({
     where: { shop: session.shop },
     select: { discountGid: true, validationGid: true, paymentGid: true },
@@ -51,7 +57,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { admin, billing, session } = await authenticate.admin(request);
-  await requireAppSubscription(billing);
+  const partnerDevelopment = await shopIsPartnerDevelopment(admin);
+  await requireAppSubscription(billing, process.env, { partnerDevelopment });
   const formData = await request.formData();
   const saved = await saveWholesaleSettings(admin, formData);
   if (!saved.ok || !saved.settings) {

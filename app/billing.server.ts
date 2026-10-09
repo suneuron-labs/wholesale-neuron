@@ -69,6 +69,34 @@ export function shouldRequestBilling(env: AppEnv): boolean {
   return env.NODE_ENV === "production" || env.ENFORCE_BILLING === "1";
 }
 
+export function subscriptionIsTest(
+  env: AppEnv,
+  partnerDevelopment = false,
+): boolean {
+  return partnerDevelopment || env.NODE_ENV !== "production";
+}
+
+export async function shopIsPartnerDevelopment(admin: {
+  graphql: (query: string) => Promise<{ json: () => Promise<unknown> }>;
+}): Promise<boolean> {
+  const response = await admin.graphql(
+    `#graphql
+      query BillingShopPlan {
+        shop {
+          plan {
+            partnerDevelopment
+          }
+        }
+      }`,
+  );
+  const json = (await response.json()) as {
+    data?: {
+      shop?: { plan?: { partnerDevelopment?: boolean | null } | null } | null;
+    };
+  };
+  return json.data?.shop?.plan?.partnerDevelopment === true;
+}
+
 export function isPublicDistributionBillingError(error: unknown): boolean {
   return errorText(error).toLowerCase().includes("public distribution");
 }
@@ -76,8 +104,9 @@ export function isPublicDistributionBillingError(error: unknown): boolean {
 export async function requireAppSubscription(
   billing: BillingClient,
   env: AppEnv = process.env,
+  options?: { partnerDevelopment?: boolean },
 ): Promise<SubscriptionGate> {
-  const isTest = env.NODE_ENV !== "production";
+  const isTest = subscriptionIsTest(env, options?.partnerDevelopment);
 
   try {
     if (!shouldRequestBilling(env)) {
