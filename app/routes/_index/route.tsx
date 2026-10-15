@@ -102,8 +102,8 @@ export default function App() {
           <span>© 2026 SUNEURON PTE. LTD.</span>
         </div>
         <div className={styles.footerLinks}>
-          <a href="mailto:wholesale@suneuron.com">
-            wholesale@suneuron.com
+          <a href="mailto:support@wholesale.suneuron.com">
+            support@wholesale.suneuron.com
           </a>
           <a href="/privacy">Privacy Policy</a>
         </div>

@@ -18,7 +18,7 @@ User answers, in order:
 ## Brand
 
 - App name in Partner Dashboard, Admin, and billing: **WholesaleNeuron**
-- Support mailto: `wholesale@suneuron.com`
+- Support mailto: `support@wholesale.suneuron.com`
 - Colors: navy `#0B1F33`, copper `#D4A574`, white
 - Mark: one large node (the merchant) branching to smaller nodes (wholesale buyers). The copper path is the checkout pricing route.
 - App icon only: `brand/wholesale-neuron-mark.png`. Square mark, three buyer paths. No wordmark file. The app name is set in the Partner Dashboard, not inside the image.
@@ -30,7 +30,7 @@ User answers, in order:
 - User asked to plan first. Build starts only on an explicit "build" instruction.
 - Generic rules: `.cursor/rules/shopify.mdc`. Product spec: `.cursor/spec-plans/app-spec.md`.
 - The `$39` / `$105` figures in the spec are **Shopify plan prices**, not this app's fee. The app fee is **$29/month**.
-- Support link in the embedded UI is `mailto:wholesale@suneuron.com`.
+- Support link in the embedded UI is `mailto:support@wholesale.suneuron.com`.
 - 2026-09-28: user created the dev store and asked for the Partner app. App created with the React Router template.
 - 2026-09-29: user set Dev Dashboard distribution to **Public**.
 - 2026-09-29: Slice 2 was confirmed on `suneuron-dev-wholesale`: both function lines SUCCESS, logged-out checkout stayed retail. Slice 3 (pricing engine logic) stays blocked until the user says to build it. The function files return no discounts and no validation errors until then.
@@ -193,7 +193,7 @@ Single route `app/routes/app._index.tsx` (or the React Router equivalent):
 - Action validates, calls `metafieldsSet`, syncs the two owners, checks `userErrors`, upserts GIDs.
 - Banner when dev billing is bypassed.
 - Sync log, or an empty state if the merchant has never saved.
-- Support control: `mailto:wholesale@suneuron.com`, label WholesaleNeuron support.
+- Support control: `mailto:support@wholesale.suneuron.com`, label WholesaleNeuron support.
 - Route `ErrorBoundary` with a critical banner.
 
 Server-side validation:
@@ -236,7 +236,7 @@ Checked against the code on 2026-10-02. Automated column is `npm test` (59 passe
 | Credit card on this store | The function sends a hide for the test card (`(for testing) Bogus Gateway`). Shopify does not apply it on a non-Plus store in the US or Canada, so **Credit card** stays. | The hide operation is covered. The platform exception is not a unit test. | Yes. Tagged checkout still showed **Credit card** beside **Bank Deposit**. Function log showed the hide was sent. |
 | Billing | $29 USD / 30 days, 7-day trial. Plan name **Essential B2B Plan**. Dev bypass with a warning banner. No charge unless production or `ENFORCE_BILLING=1`. Loader and settings action both call `requireAppSubscription`. | Yes. Plan constants, action gate, and dev-only bypass. | Banner seen 2026-09-29. Test charge approval confirmed 2026-10-06 with `ENFORCE_BILLING=1`. |
 | Privacy and uninstall | Uninstall clears the session and marks the shop uninstalled. The three privacy topics return 200 and store no customer PII. Public `/privacy` route documents GDPR/CCPA, webhooks, rights, and subprocessors (Supabase / AWS / Vercel / Shopify). Legal entity **SUNEURON PTE. LTD.** | Yes. Idempotency, redact, uninstall, `admin: null`. | Uninstall confirmed 2026-09-29. Privacy page live in app 2026-10-06. |
-| Support | `mailto:wholesale@suneuron.com` plus in-app Privacy policy link | No | Support + privacy links seen 2026-10-06 |
+| Support | `mailto:support@wholesale.suneuron.com` plus in-app Privacy policy link | No | Support + privacy links seen 2026-10-06 |
 | Quick Setup Guide | Merchant-friendly 3-step guide on the dashboard (Polaris web components) | No | Seen 2026-10-06 |
 
 ## Not in this version
@@ -266,7 +266,7 @@ Checked against the code on 2026-10-02. Automated column is `npm test` (59 passe
 | Plan written | Done |
 | Six product decisions | Locked 2026-09-28 |
 | Brand name | WholesaleNeuron |
-| Support contact | wholesale@suneuron.com |
+| Support contact | support@wholesale.suneuron.com |
 | Logo | `brand/wholesale-neuron-mark.png` only. Wordmark lockup removed 2026-09-28. |
 | Dev store | Linked: `suneuron-dev-wholesale.myshopify.com`. Scopes, embedded page, and live uninstall confirmed 2026-09-29 |
 | Partner app | Created. Name **WholesaleNeuron**. Org **SUNEURON PTE. LTD.** (`236696948`). Client ID `887f5834812eeebb06938e6c3f5de5a2`. Dashboard: https://dev.shopify.com/dashboard/236696948 |

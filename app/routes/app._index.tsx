@@ -242,7 +242,7 @@ export default function Index() {
       ) : null}
       <s-section heading="Support" slot="aside">
         <s-paragraph>
-          <s-link href="mailto:wholesale@suneuron.com">
+          <s-link href="mailto:support@wholesale.suneuron.com">
             WholesaleNeuron support
           </s-link>
         </s-paragraph>
