@@ -30,7 +30,10 @@ export default function App() {
   return (
     <div className={styles.index}>
       <div className={styles.content}>
-        <h1 className={styles.heading}>WholesaleNeuron</h1>
+        <h1 className={styles.heading}>
+          <span className={styles.logoWholesale}>Wholesale</span>
+          <span className={styles.logoNeuron}>Neuron</span>
+        </h1>
         <p className={styles.text}>
           B2B wholesale pricing, tiered discounts, and checkout rules for your
           tagged customers.
@@ -49,18 +52,31 @@ export default function App() {
         )}
         <ul className={styles.list}>
           <li>
-            <strong>Tiered Wholesale Pricing</strong>. Automatically apply
-            customized percentage discounts to tagged buyers directly within
-            Shopify checkout.
+            <strong className={styles.featureTitle}>
+              Tiered Wholesale Pricing
+            </strong>
+            <span className={styles.featureDesc}>
+              Automatically apply customized percentage discounts to tagged
+              buyers directly within Shopify checkout.
+            </span>
           </li>
           <li>
-            <strong>Minimum Order Validation</strong>. Enforce custom order
-            minimums and quantities before wholesale customers can proceed to
-            checkout.
+            <strong className={styles.featureTitle}>
+              Minimum Order Validation
+            </strong>
+            <span className={styles.featureDesc}>
+              Enforce custom order minimums and quantities before wholesale
+              customers can proceed to checkout.
+            </span>
           </li>
           <li>
-            <strong>Native Checkout Integration</strong>. Built securely on
-            Shopify Functions for ultra-fast, zero-flicker rule enforcement.
+            <strong className={styles.featureTitle}>
+              Native Checkout Integration
+            </strong>
+            <span className={styles.featureDesc}>
+              Built securely on Shopify Functions for ultra-fast, zero-flicker
+              rule enforcement.
+            </span>
           </li>
         </ul>
         <footer className={styles.footer}>
