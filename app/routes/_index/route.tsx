@@ -94,6 +94,11 @@ export default function App() {
           <p>
             <a href="/privacy">Privacy Policy</a>
           </p>
+          <img
+            className={styles.footerLogo}
+            src="/suneuron-logo.png"
+            alt="Suneuron Logo"
+          />
           <p>Support: support@wholesale.suneuron.com</p>
           <p>© 2026 SUNEURON PTE. LTD.</p>
         </footer>
