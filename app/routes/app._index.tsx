@@ -174,11 +174,6 @@ export default function Index() {
             customer is logged in. A guest checkout of the same cart keeps the
             retail price and is not blocked.
           </s-paragraph>
-          <s-paragraph>
-            A Shopify CLI webhook trigger only proves this app received the
-            call. It uses a sample shop, so it does not show activity for the
-            store you are viewing.
-          </s-paragraph>
         </s-section>
       )}
       <Form method="post" data-save-bar>
