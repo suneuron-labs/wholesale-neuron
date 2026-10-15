@@ -30,9 +30,10 @@ export default function App() {
   return (
     <div className={styles.index}>
       <div className={styles.content}>
-        <h1 className={styles.heading}>A short heading about [your app]</h1>
+        <h1 className={styles.heading}>WholesaleNeuron</h1>
         <p className={styles.text}>
-          A tagline about [your app] that describes your value proposition.
+          B2B wholesale pricing, tiered discounts, and checkout rules for your
+          tagged customers.
         </p>
         {showForm && (
           <Form className={styles.form} method="post">
@@ -42,24 +43,33 @@ export default function App() {
               <span>{errors?.shop ?? "e.g: my-shop-domain.myshopify.com"}</span>
             </label>
             <button className={styles.button} type="submit">
-              Log in
+              Log in / Install
             </button>
           </Form>
         )}
         <ul className={styles.list}>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Tiered Wholesale Pricing</strong>. Automatically apply
+            customized percentage discounts to tagged buyers directly within
+            Shopify checkout.
           </li>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Minimum Order Validation</strong>. Enforce custom order
+            minimums and quantities before wholesale customers can proceed to
+            checkout.
           </li>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Native Checkout Integration</strong>. Built securely on
+            Shopify Functions for ultra-fast, zero-flicker rule enforcement.
           </li>
         </ul>
+        <footer className={styles.footer}>
+          <p>
+            <a href="/privacy">Privacy Policy</a>
+          </p>
+          <p>Support: support@wholesale.suneuron.com</p>
+          <p>© 2026 SUNEURON PTE. LTD.</p>
+        </footer>
       </div>
     </div>
   );
