@@ -177,8 +177,8 @@ export default function PrivacyPolicy() {
             deletion of personal information we hold about them, subject to
             applicable law (including GDPR and CCPA). To exercise these rights,
             email{" "}
-            <a style={styles.link} href="mailto:support@wholesale.suneuron.com">
-              support@wholesale.suneuron.com
+            <a style={styles.link} href="mailto:wholesale@suneuron.com">
+              wholesale@suneuron.com
             </a>
             {" "}
             with enough detail for us to verify the request and identify the
@@ -201,8 +201,8 @@ export default function PrivacyPolicy() {
             WholesaleNeuron is operated by <strong>SUNEURON PTE. LTD.</strong>{" "}
             For privacy questions or data requests related to WholesaleNeuron,
             contact{" "}
-            <a style={styles.link} href="mailto:support@wholesale.suneuron.com">
-              support@wholesale.suneuron.com
+            <a style={styles.link} href="mailto:wholesale@suneuron.com">
+              wholesale@suneuron.com
             </a>
             . You may also reach us through the support channel listed on the
             WholesaleNeuron Shopify App Store listing page.
