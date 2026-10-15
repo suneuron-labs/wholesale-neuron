@@ -172,7 +172,7 @@
   margin: 0 auto;
   padding: 1.25rem 1.5rem 0.25rem;
   box-sizing: border-box;
-  font-size: 0.875rem;
+  font-size: 14px;
   color: #64748b;
 }
 
@@ -180,26 +180,30 @@
 .footerLinks {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+}
+
+.footerBrand {
+  gap: 12px;
 }
 
 .footerLinks {
-  gap: 1.25rem;
+  gap: 24px;
 }
 
 .footer a {
-  color: #334155;
+  color: #64748b;
   text-decoration: none;
 }
 
 .footerLogo {
   display: block;
-  height: 24px;
+  height: 28px;
   width: auto;
 }
 
 .footer a:hover {
-  color: #fc5739;
+  color: #64748b;
+  opacity: 0.7;
   text-decoration: underline;
 }
 
