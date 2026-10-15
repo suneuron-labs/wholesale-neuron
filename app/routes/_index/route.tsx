@@ -91,24 +91,23 @@ export default function App() {
             </span>
           </li>
         </ul>
-        <footer className={styles.footer}>
-          <p>
-            <a href="/privacy">Privacy Policy</a>
-          </p>
+      </div>
+      <footer className={styles.footer}>
+        <div className={styles.footerBrand}>
           <img
             className={styles.footerLogo}
             src="/suneuron-logo.png"
             alt="Suneuron Logo"
           />
-          <p>
-            Support:{" "}
-            <a href="mailto:support@wholesale.suneuron.com">
-              support@wholesale.suneuron.com
-            </a>
-          </p>
-          <p>© 2026 SUNEURON PTE. LTD.</p>
-        </footer>
-      </div>
+          <span>© 2026 SUNEURON PTE. LTD.</span>
+        </div>
+        <div className={styles.footerLinks}>
+          <a href="mailto:support@wholesale.suneuron.com">
+            support@wholesale.suneuron.com
+          </a>
+          <a href="/privacy">Privacy Policy</a>
+        </div>
+      </footer>
     </div>
   );
 }
