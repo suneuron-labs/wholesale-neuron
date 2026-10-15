@@ -172,7 +172,7 @@
   margin: 0 auto;
   padding: 1.25rem 1.5rem 0.25rem;
   box-sizing: border-box;
-  font-size: 14px;
+  font-size: 13px;
   color: #64748b;
 }
 
@@ -192,18 +192,18 @@
 
 .footer a {
   color: #64748b;
+  font-size: 13px;
   text-decoration: none;
 }
 
 .footerLogo {
   display: block;
-  height: 28px;
+  height: 32px;
   width: auto;
 }
 
 .footer a:hover {
   color: #64748b;
-  opacity: 0.7;
   text-decoration: underline;
 }
 
