@@ -99,7 +99,12 @@ export default function App() {
             src="/suneuron-logo.png"
             alt="Suneuron Logo"
           />
-          <p>Support: support@wholesale.suneuron.com</p>
+          <p>
+            Support:{" "}
+            <a href="mailto:support@wholesale.suneuron.com">
+              support@wholesale.suneuron.com
+            </a>
+          </p>
           <p>© 2026 SUNEURON PTE. LTD.</p>
         </footer>
       </div>
