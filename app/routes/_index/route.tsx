@@ -83,7 +83,7 @@ export default function App() {
           </li>
           <li>
             <strong className={styles.featureTitle}>
-              Native Checkout Integration
+              Restrict Payment Methods
             </strong>
             <span className={styles.featureDesc}>
               Hide standard retail payment gateways at checkout so wholesale
