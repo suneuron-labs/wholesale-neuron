@@ -40,14 +40,25 @@ export default function App() {
         </p>
         {showForm && (
           <Form className={styles.form} method="post">
-            <label className={styles.label}>
-              <span>Shop domain</span>
-              <input className={styles.input} type="text" name="shop" />
-              <span>{errors?.shop ?? "e.g: my-shop-domain.myshopify.com"}</span>
-            </label>
-            <button className={styles.button} type="submit">
-              Log in / Install
-            </button>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="shop">
+                Shop domain
+              </label>
+              <div className={styles.controls}>
+                <input
+                  id="shop"
+                  className={styles.input}
+                  type="text"
+                  name="shop"
+                />
+                <button className={styles.button} type="submit">
+                  Log in / Install
+                </button>
+              </div>
+              <span className={styles.hint}>
+                {errors?.shop ?? "e.g: my-shop-domain.myshopify.com"}
+              </span>
+            </div>
           </Form>
         )}
         <ul className={styles.list}>
