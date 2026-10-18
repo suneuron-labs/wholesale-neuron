@@ -2,7 +2,7 @@
 
 client_id = "887f5834812eeebb06938e6c3f5de5a2"
 name = "WholesaleNeuron"
-application_url = "https://wholesale-neuron.vercel.app"
+application_url = "https://wholesale.suneuron.com"
 embedded = true
 
 [access_scopes]
@@ -82,9 +82,9 @@ api_version = "2026-07"
 
 [auth]
 redirect_urls = [
-  "https://wholesale-neuron.vercel.app/auth/callback",
-  "https://wholesale-neuron.vercel.app/auth/shopify/callback",
-  "https://wholesale-neuron.vercel.app/api/auth/callback"
+  "https://wholesale.suneuron.com/auth/callback",
+  "https://wholesale.suneuron.com/auth/shopify/callback",
+  "https://wholesale.suneuron.com/api/auth/callback"
 ]
 
 [build]
