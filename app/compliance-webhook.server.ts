@@ -8,12 +8,13 @@ import {
   type WebhookDeliveryRecord,
   type WebhookStatus,
 } from "./webhook-delivery.server";
+import { resolveComplianceWebhook } from "./webhook-auth.server";
 
 export async function complianceWebhookAction({ request }: ActionFunctionArgs) {
-  const { shop, topic, webhookId, admin, session, payload } =
-    await authenticate.webhook(request);
-  const current = payload.current;
-  const sessionScopes = Array.isArray(current) ? current.join(",") : null;
+  const { shop, topic, webhookId, admin, sessionId, sessionScopes } =
+    await resolveComplianceWebhook(request, (webhookRequest) =>
+      authenticate.webhook(webhookRequest),
+    );
 
   await handleComplianceWebhook({
     store: {
@@ -55,8 +56,8 @@ export async function complianceWebhookAction({ request }: ActionFunctionArgs) {
     shop,
     eventId: webhookId,
     topic,
-    admin: admin ?? null,
-    sessionId: session?.id ?? null,
+    admin,
+    sessionId,
     sessionScopes,
   });
 
