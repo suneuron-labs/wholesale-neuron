@@ -5,18 +5,18 @@ const appConfig = readFileSync(new URL("../shopify.app.toml", import.meta.url), 
 const webConfig = readFileSync(new URL("../shopify.web.toml", import.meta.url), "utf8");
 
 describe("shopify.app.toml", () => {
-  it("uses the Vercel production application url and the v1 scopes", () => {
+  it("uses the production application url and the v1 scopes", () => {
     expect(appConfig).toMatch(
-      /application_url\s*=\s*"https:\/\/wholesale-neuron\.vercel\.app"/,
+      /application_url\s*=\s*"https:\/\/wholesale\.suneuron\.com"/,
     );
     expect(appConfig).toMatch(
-      /https:\/\/wholesale-neuron\.vercel\.app\/auth\/callback/,
+      /https:\/\/wholesale\.suneuron\.com\/auth\/callback/,
     );
     expect(appConfig).toMatch(
-      /https:\/\/wholesale-neuron\.vercel\.app\/auth\/shopify\/callback/,
+      /https:\/\/wholesale\.suneuron\.com\/auth\/shopify\/callback/,
     );
     expect(appConfig).toMatch(
-      /https:\/\/wholesale-neuron\.vercel\.app\/api\/auth\/callback/,
+      /https:\/\/wholesale\.suneuron\.com\/api\/auth\/callback/,
     );
     expect(appConfig).toMatch(/write_discounts/);
     expect(appConfig).toMatch(/write_validations/);
