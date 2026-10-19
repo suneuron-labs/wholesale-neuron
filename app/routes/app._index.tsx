@@ -1,5 +1,7 @@
-import { Form, isRouteErrorResponse, useActionData, useLoaderData, useRouteError } from "react-router";
+import { useEffect } from "react";
+import { Form, isRouteErrorResponse, useActionData, useLoaderData, useNavigation, useRouteError } from "react-router";
 import type { ActionFunctionArgs, HeadersFunction, LoaderFunctionArgs } from "react-router";
+import { useAppBridge } from "@shopify/app-bridge-react";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import {
   requireAppSubscription,
@@ -65,7 +67,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const saved = await saveWholesaleSettings(admin, formData);
   if (!saved.ok || !saved.settings) {
-    return { ...saved, sync: null };
+    return { ...saved, sync: null, savedAt: null };
   }
 
   const stored = await db.appSettings.findUnique({
@@ -98,15 +100,23 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     },
   });
 
-  return { ...saved, sync };
+  return { ...saved, sync, savedAt: Date.now() };
 };
 
 export default function Index() {
+  const shopify = useAppBridge();
+  const nav = useNavigation();
   const loaderData = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const settings = actionData?.ok ? actionData.settings : loaderData.settings;
   const saved = actionData?.ok ? true : loaderData.saved;
   const { billingBypassed, bypassReason } = loaderData;
+  const savedAt = actionData?.savedAt;
+
+  useEffect(() => {
+    if (savedAt == null) return;
+    shopify.toast.show("Settings saved");
+  }, [savedAt, shopify]);
 
   return (
     <s-page heading="WholesaleNeuron">
@@ -159,13 +169,7 @@ export default function Index() {
           </s-ordered-list>
         </s-stack>
       </s-section>
-      {saved ? (
-        <s-banner heading="Settings saved" tone="success">
-          <s-paragraph>
-            These values are stored for this store.
-          </s-paragraph>
-        </s-banner>
-      ) : (
+      {saved ? null : (
         <s-section heading="No wholesale settings yet">
           <s-paragraph>
             The customer tag, wholesale discount, minimum order, and allowed
@@ -209,7 +213,11 @@ export default function Index() {
             details="Leave blank to allow all standard payment methods. Enter an exact method name (e.g., 'Bank Deposit' or 'Net 30') to make it the only payment option shown to tagged wholesale buyers at checkout."
             error={actionData?.fieldErrors.paymentMethodName}
           />
-          <s-button type="submit" variant="primary">
+          <s-button
+            type="submit"
+            variant="primary"
+            loading={nav.state === "submitting"}
+          >
             Save Configuration
           </s-button>
         </s-section>
