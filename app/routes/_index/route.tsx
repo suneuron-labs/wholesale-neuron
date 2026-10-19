@@ -56,7 +56,7 @@ export default function App() {
                 </button>
               </div>
               <span className={styles.hint}>
-                {errors?.shop ?? "e.g: my-shop-domain.myshopify.com"}
+                {errors?.shop ?? "e.g., your-store.myshopify.com"}
               </span>
             </div>
           </Form>
@@ -73,10 +73,10 @@ export default function App() {
           </li>
           <li>
             <strong className={styles.featureTitle}>
-              Minimum Order Value
+              Minimum Order Amount
             </strong>
             <span className={styles.featureDesc}>
-              Enforce a required minimum cart amount, preventing tagged
+              Enforce a required minimum order amount, preventing tagged
               wholesale customers from checking out until the requirement is
               met.
             </span>

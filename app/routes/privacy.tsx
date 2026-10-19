@@ -72,17 +72,20 @@ export default function PrivacyPolicy() {
       <main style={styles.main}>
         <article style={styles.card}>
           <h1 style={styles.title}>Privacy Policy</h1>
-          <p style={styles.updated}>WholesaleNeuron · Last updated October 6, 2026</p>
+          <p style={styles.updated}>
+            WholesaleNeuron · Last updated October 19, 2026
+          </p>
 
           <h2 style={styles.heading}>Overview</h2>
           <p style={styles.paragraph}>
             WholesaleNeuron (“we”, “our”, or “the app”) is a Shopify embedded app
-            operated by <strong>SUNEURON PTE. LTD.</strong> WholesaleNeuron helps
-            merchants configure wholesale checkout rules for tagged customers. We
-            design our products and data practices to comply with applicable global
-            privacy standards, including the General Data Protection Regulation
-            (GDPR) and the California Consumer Privacy Act (CCPA), as well as
-            Shopify’s App Store privacy requirements.
+            operated by SUNEURON PTE. LTD., a company incorporated in Singapore.
+            WholesaleNeuron helps merchants configure wholesale checkout rules
+            for tagged customers. We design our products and data practices to
+            comply with applicable global privacy standards, including the
+            General Data Protection Regulation (GDPR) and the California Consumer
+            Privacy Act (CCPA), as well as Shopify’s App Store privacy
+            requirements.
           </p>
 
           <h2 style={styles.heading}>Data Collected &amp; Stored</h2>
@@ -92,26 +95,32 @@ export default function PrivacyPolicy() {
           </p>
           <ul style={styles.list}>
             <li style={styles.listItem}>
-              <strong>Shop domain</strong> — identifies the merchant store that
+              <strong>Shop domain:</strong> Identifies the merchant store that
               installed the app.
             </li>
             <li style={styles.listItem}>
-              <strong>Access tokens / session records</strong> — used for
+              <strong>Access tokens / session records:</strong> Used for
               authenticated Admin API access and session management while the
               app remains installed.
             </li>
             <li style={styles.listItem}>
-              <strong>Merchant rule configuration</strong> — wholesale settings
-              such as customer tags, discount percent, minimum order value, and
-              allowed payment method name.
+              <strong>Merchant rule configuration:</strong> Wholesale settings
+              such as customer tags, discount percentage, minimum order amount,
+              and allowed payment method name.
+            </li>
+            <li style={styles.listItem}>
+              <strong>Operational logs:</strong> Records of webhook events
+              (e.g., topic, delivery status, and timestamps) maintained for
+              debugging and system reliability.
             </li>
           </ul>
           <p style={styles.paragraph}>
-            WholesaleNeuron does <strong>not</strong> sell customer personal
-            identifiable information (PII). We do not store shopper names,
-            emails, addresses, phone numbers, or payment credentials in our
-            external application database. Checkout behavior is evaluated inside
-            Shopify’s Functions runtime using merchant-configured rules.
+            WholesaleNeuron does not sell customer personal identifiable
+            information (PII). We do not collect, process, or store shopper
+            names, email addresses, shipping/billing addresses, phone numbers, or
+            payment credentials in our external application database. Wholesale
+            checkout behavior and tag checks are evaluated entirely inside
+            Shopify’s native Functions runtime using merchant-configured rules.
           </p>
 
           <h2 style={styles.heading}>Subprocessors &amp; Cloud Infrastructure</h2>
@@ -122,28 +131,30 @@ export default function PrivacyPolicy() {
           </p>
           <ul style={styles.list}>
             <li style={styles.listItem}>
-              <strong>Supabase</strong> — managed PostgreSQL database used to
+              <strong>Supabase:</strong> Managed PostgreSQL database used to
               store shop domain records, access tokens / sessions, and merchant
               rule settings.
             </li>
             <li style={styles.listItem}>
-              <strong>Amazon Web Services (AWS)</strong> — underlying cloud
-              infrastructure that hosts the Supabase database region used by
+              <strong>Amazon Web Services (AWS):</strong> Underlying cloud
+              infrastructure hosting the Supabase database region used by
               WholesaleNeuron.
             </li>
             <li style={styles.listItem}>
-              <strong>Vercel</strong> — cloud application hosting for the
+              <strong>Vercel:</strong> Cloud application hosting for the
               WholesaleNeuron web service that serves the embedded admin UI,
-              public privacy page, and webhook endpoints.
+              public pages, and webhook endpoints.
             </li>
             <li style={styles.listItem}>
-              <strong>Shopify</strong> — platform provider for authentication,
-              Admin API access, billing, and checkout Functions processing.
+              <strong>Shopify:</strong> Platform provider for merchant
+              authentication, Admin API access, billing, and checkout Functions
+              execution.
             </li>
           </ul>
           <p style={styles.paragraph}>
             These providers process data only as needed to operate and secure the
-            app. We do not sell merchant or customer data to third parties.
+            app. We do not sell or rent merchant or customer data to third
+            parties.
           </p>
 
           <h2 style={styles.heading}>Mandatory Shopify Privacy Webhooks</h2>
@@ -163,11 +174,11 @@ export default function PrivacyPolicy() {
               is no customer personal data to delete from our systems.
             </li>
             <li style={styles.listItem}>
-              <strong>shop/redact:</strong> Shopify sends this webhook about 48
-              hours after a merchant uninstalls the app. When we receive it, we
-              completely delete that shop’s records from our database, including
-              app settings, session tokens, and related delivery logs for the
-              store.
+              <strong>shop/redact:</strong> Shopify sends this webhook
+              approximately 48 hours after a merchant uninstalls the app. When
+              received, we permanently delete that shop’s records from our
+              database, including app settings, session tokens, and associated
+              delivery logs.
             </li>
           </ul>
 
@@ -179,8 +190,7 @@ export default function PrivacyPolicy() {
             email{" "}
             <a style={styles.link} href="mailto:support@wholesale.suneuron.com">
               support@wholesale.suneuron.com
-            </a>
-            {" "}
+            </a>{" "}
             with enough detail for us to verify the request and identify the
             relevant shop or record. We will respond within the timeframe
             required by applicable law. Where Shopify privacy webhooks apply, we
@@ -189,23 +199,23 @@ export default function PrivacyPolicy() {
 
           <h2 style={styles.heading}>Security</h2>
           <p style={styles.paragraph}>
-            Data in transit is protected with TLS/SSL. Application data at rest
-            is stored in a secured cloud database with access limited to the
-            services that operate WholesaleNeuron. We rely on Shopify’s
-            authentication model for embedded admin sessions and revoke store
-            access when the app is uninstalled.
+            Data in transit is protected using TLS/SSL encryption. Application
+            data at rest is stored in a secured cloud database with access
+            restricted to the services that operate WholesaleNeuron. We rely on
+            Shopify’s authentication model for embedded admin sessions and revoke
+            store access when the app is uninstalled.
           </p>
 
           <h2 style={styles.heading}>Contact Information</h2>
           <p style={styles.paragraph}>
-            WholesaleNeuron is operated by <strong>SUNEURON PTE. LTD.</strong>{" "}
-            For privacy questions or data requests related to WholesaleNeuron,
-            contact{" "}
+            WholesaleNeuron is operated by SUNEURON PTE. LTD. For privacy
+            questions, data requests, or support related to WholesaleNeuron,
+            please contact{" "}
             <a style={styles.link} href="mailto:support@wholesale.suneuron.com">
               support@wholesale.suneuron.com
             </a>
-            . You may also reach us through the support channel listed on the
-            WholesaleNeuron Shopify App Store listing page.
+            . You may also reach us through the support channel listed on our
+            Shopify App Store listing page.
           </p>
         </article>
       </main>

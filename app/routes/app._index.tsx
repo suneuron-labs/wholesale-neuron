@@ -6,7 +6,10 @@ import {
   shopIsPartnerDevelopment,
 } from "../billing.server";
 import db from "../db.server";
-import { syncFunctionOwners } from "../function-owners.server";
+import {
+  syncFunctionOwners,
+  type SyncState,
+} from "../function-owners.server";
 import {
   parseStoredSettings,
   saveWholesaleSettings,
@@ -135,8 +138,8 @@ export default function Index() {
             <s-list-item>
               <s-text>
                 <strong>Configure Rules:</strong> Set your required customer tag
-                (e.g., WHOLESALE), discount percentage, minimum order amount,
-                and allowed payment methods below.
+                (e.g., wholesale), discount percentage, minimum order amount
+                ($), and allowed B2B payment method below.
               </s-text>
             </s-list-item>
             <s-list-item>
@@ -186,24 +189,24 @@ export default function Index() {
             error={actionData?.fieldErrors.customerTag}
           />
           <s-text-field
-            label="Discount percent"
+            label="Discount percentage (%)"
             name="discountPercent"
             defaultValue={String(settings.discountPercent)}
             details="Enter 0 to disable wholesale discounts for tagged buyers."
             error={actionData?.fieldErrors.discountPercent}
           />
           <s-text-field
-            label="Minimum order"
+            label="Minimum order amount ($)"
             name="minimumOrderValue"
             defaultValue={String(settings.minimumOrderValue)}
-            details="Enter 0 to disable minimum order value restrictions for tagged buyers."
+            details="Enter 0 to disable minimum order amount requirements for tagged buyers. Applies to the cart subtotal before taxes and shipping."
             error={actionData?.fieldErrors.minimumOrderValue}
           />
           <s-text-field
             label="Allowed B2B Payment Method Name"
             name="paymentMethodName"
             defaultValue={settings.paymentMethodName}
-            details="Leave blank to keep standard credit cards active. Enter a method name (e.g., 'Net 30') to hide all other payment options."
+            details="Leave blank to allow all standard payment methods. Enter an exact method name (e.g., 'Bank Deposit' or 'Net 30') to make it the only payment option shown to tagged wholesale buyers at checkout."
             error={actionData?.fieldErrors.paymentMethodName}
           />
           <s-button type="submit" variant="primary">
@@ -213,24 +216,23 @@ export default function Index() {
       </Form>
       {actionData?.sync ? (
         <s-section heading="Function sync">
-          <s-paragraph>
-            Wholesale pricing: {actionData.sync.discount.status}
-            {actionData.sync.discount.userErrors.length > 0
-              ? `. ${actionData.sync.discount.userErrors.join(" ")}`
-              : ""}
-          </s-paragraph>
-          <s-paragraph>
-            Wholesale minimum order: {actionData.sync.validation.status}
-            {actionData.sync.validation.userErrors.length > 0
-              ? `. ${actionData.sync.validation.userErrors.join(" ")}`
-              : ""}
-          </s-paragraph>
-          <s-paragraph>
-            Wholesale payment methods: {actionData.sync.payment.status}
-            {actionData.sync.payment.userErrors.length > 0
-              ? `. ${actionData.sync.payment.userErrors.join(" ")}`
-              : ""}
-          </s-paragraph>
+          <s-stack gap="base">
+            <FunctionSyncStatus
+              label="Wholesale pricing"
+              status={actionData.sync.discount.status}
+              userErrors={actionData.sync.discount.userErrors}
+            />
+            <FunctionSyncStatus
+              label="Wholesale minimum order"
+              status={actionData.sync.validation.status}
+              userErrors={actionData.sync.validation.userErrors}
+            />
+            <FunctionSyncStatus
+              label="Wholesale payment methods"
+              status={actionData.sync.payment.status}
+              userErrors={actionData.sync.payment.userErrors}
+            />
+          </s-stack>
         </s-section>
       ) : saved &&
         (!loaderData.discountGid || !loaderData.validationGid || !loaderData.paymentGid) ? (
@@ -253,6 +255,32 @@ export default function Index() {
         </s-paragraph>
       </s-section>
     </s-page>
+  );
+}
+
+function FunctionSyncStatus({
+  label,
+  status,
+  userErrors,
+}: {
+  label: string;
+  status: SyncState;
+  userErrors: string[];
+}) {
+  const active = status === "SUCCESS";
+
+  return (
+    <s-stack gap="small">
+      <s-stack direction="inline" gap="base" alignItems="center">
+        <s-text>{label}:</s-text>
+        <s-badge tone={active ? "success" : "critical"}>
+          {active ? "Active" : "Failed"}
+        </s-badge>
+      </s-stack>
+      {userErrors.length > 0 ? (
+        <s-paragraph>{userErrors.join(" ")}</s-paragraph>
+      ) : null}
+    </s-stack>
   );
 }
 
