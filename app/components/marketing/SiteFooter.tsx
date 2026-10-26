@@ -20,21 +20,25 @@ export function SiteFooter({ compactBottom = false }: SiteFooterProps) {
           src="/suneuron-logo.png"
           alt="Suneuron Logo"
         />
-        <span>© 2026 SUNEURON PTE. LTD.</span>
+        <p className={styles.footerBrandCopy}>© 2026 SUNEURON PTE. LTD.</p>
+        <p className={styles.footerDisclaimer}>
+          WholesaleNeuron is an independent application and is not affiliated
+          with, endorsed by, or sponsored by Shopify Inc. &quot;Shopify&quot; and
+          &quot;Shopify Plus&quot; are trademarks of Shopify Inc.
+        </p>
       </div>
 
-      <div className={styles.footerColumns}>
-        <div className={styles.footerColumn}>
-          <p className={styles.footerColumnTitle}>Resources</p>
-          <Link to={BLOG_GUIDE_PATH}>Shopify Wholesale Guide (No Plus)</Link>
-          <Link to="/privacy">Privacy Policy</Link>
-        </div>
-        <div className={styles.footerColumn}>
-          <p className={styles.footerColumnTitle}>Support</p>
-          <a href="mailto:support@wholesale.suneuron.com">
-            support@wholesale.suneuron.com
-          </a>
-        </div>
+      <div className={`${styles.footerColumn} ${styles.footerResources}`}>
+        <p className={styles.footerColumnTitle}>Resources</p>
+        <Link to={BLOG_GUIDE_PATH}>Shopify Wholesale Guide (No Plus)</Link>
+        <Link to="/privacy">Privacy Policy</Link>
+      </div>
+
+      <div className={`${styles.footerColumn} ${styles.footerSupport}`}>
+        <p className={styles.footerColumnTitle}>Support</p>
+        <a href="mailto:support@wholesale.suneuron.com">
+          support@wholesale.suneuron.com
+        </a>
       </div>
     </footer>
   );

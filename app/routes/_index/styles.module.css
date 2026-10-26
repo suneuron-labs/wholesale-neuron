@@ -43,7 +43,7 @@
 .text {
   font-size: 1.125rem;
   line-height: 1.6;
-  max-width: 40rem;
+  max-width: 46rem;
   color: #475569;
   padding-bottom: 0.5rem;
 }
@@ -63,6 +63,12 @@
 
 .form {
   margin: 0 auto;
+}
+
+.formDisabled {
+  opacity: 0.55;
+  pointer-events: none;
+  user-select: none;
 }
 
 .field {
@@ -104,10 +110,26 @@
   border-color: #fc5739;
 }
 
+.input:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+}
+
 .hint {
   font-size: 0.875rem;
   font-weight: 400;
   color: #64748b;
+}
+
+.planNote {
+  margin: 0.75rem 0 0;
+  max-width: 28rem;
+  color: #64748b;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  text-align: center;
 }
 
 .button {
@@ -124,51 +146,171 @@
   transition: background-color 0.15s ease;
 }
 
-.button:hover {
+.button:hover:not(:disabled) {
   background: #e04422;
 }
 
-.list {
-  list-style: none;
-  padding: 1rem 0 0;
-  margin: 0;
+.button:disabled {
+  background: #94a3b8;
+  color: #f8fafc;
+  cursor: not-allowed;
+}
+
+.planSections {
   display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+  width: 100%;
+  max-width: 72rem;
+  padding-top: 0.5rem;
+  text-align: left;
+}
+
+.planSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.planSectionHeader {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.75rem;
+}
+
+.standardPlanLabel,
+.proPlanLabel {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+.standardPlanLabel {
+  color: #64748b;
+}
+
+.proPlanLabel {
+  color: #6366f1;
+}
+
+.liveBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  background: #d1fae5;
+  color: #047857;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.comingSoonBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  background: #e0e7ff;
+  color: #4338ca;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.standardGrid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 1.5rem;
   width: 100%;
 }
 
-.list > li {
-  flex: 1;
-  max-width: 22rem;
+.featureCard {
+  position: relative;
   text-align: left;
-  padding: 1.25rem;
+  padding: 1.5rem;
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  box-sizing: border-box;
+  transition: box-shadow 0.2s ease;
+}
+
+.featureCard:hover {
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
 }
 
 .featureTitle {
   display: block;
-  margin-bottom: 0.4rem;
+  margin: 0 0 0.5rem;
   color: #0f172a;
-  font-size: 1.05rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
 .featureDesc {
   display: block;
-  color: #64748b;
-  line-height: 1.55;
-  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.625;
+  font-size: 0.875rem;
 }
 
-@media only screen and (max-width: 50rem) {
-  .list {
-    display: block;
-  }
+.featureStrong {
+  color: #0f172a;
+  font-weight: 700;
+}
 
-  .list > li {
-    max-width: none;
-    margin-bottom: 1rem;
-    padding-bottom: 1.25rem;
+.proCard {
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  padding: 1.5rem;
+  background: rgba(238, 242, 255, 0.4);
+  border: 2px dashed #a5b4fc;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  box-sizing: border-box;
+  transition: box-shadow 0.2s ease;
+}
+
+.proCard:hover {
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.proTitle {
+  display: block;
+  margin: 0 0 0.5rem;
+  color: #3730a3;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.proDesc {
+  display: block;
+  color: rgba(30, 27, 75, 0.7);
+  line-height: 1.625;
+  font-size: 0.875rem;
+}
+
+.proStrong {
+  color: #4338ca;
+  font-weight: 700;
+}
+
+@media only screen and (min-width: 48rem) {
+  .standardGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

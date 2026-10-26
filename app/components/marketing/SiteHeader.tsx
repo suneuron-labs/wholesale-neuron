@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router";
 
+import {
+  primaryCtaHref,
+  primaryCtaIsExternal,
+  primaryCtaLabel,
+} from "./cta";
 import styles from "./site-chrome.module.css";
 
 export const BLOG_GUIDE_PATH =
   "/blog/how-to-set-up-shopify-wholesale-without-shopify-plus";
-
-const APP_URL = "https://apps.shopify.com/wholesaleneuron";
 
 type SiteHeaderProps = {
   active?: "home" | "blog" | "privacy";
@@ -38,12 +41,13 @@ export function SiteHeader({
       {showInstallCta ? (
         <a
           className={styles.headerCta}
-          href={APP_URL}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={primaryCtaHref}
+          {...(primaryCtaIsExternal
+            ? { target: "_blank", rel: "noopener noreferrer" }
+            : {})}
           onClick={() => setMenuOpen(false)}
         >
-          Install free trial
+          {primaryCtaLabel}
         </a>
       ) : null}
     </>

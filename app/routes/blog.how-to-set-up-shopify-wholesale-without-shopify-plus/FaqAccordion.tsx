@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import styles from "./styles.module.css";
 
 export type FaqItem = {
   question: string;
-  answer: string;
+  answer: ReactNode;
+  /** Plain-text answer for JSON-LD when `answer` includes JSX */
+  answerText?: string;
 };
 
 type FaqAccordionProps = {

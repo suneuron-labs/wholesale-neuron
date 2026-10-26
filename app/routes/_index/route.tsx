@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { redirect, Form, useActionData, useLoaderData } from "react-router";
 
+import { USE_TEMP_EARLY_ACCESS_CTA } from "../../components/marketing/cta";
 import { SiteFooter } from "../../components/marketing/SiteFooter";
 import { SiteHeader } from "../../components/marketing/SiteHeader";
 import { login } from "../../shopify.server";
@@ -39,11 +40,22 @@ export default function App() {
           <span className={styles.logoNeuron}>Neuron</span>
         </h1>
         <p className={styles.text}>
-          Automatic wholesale discounts, minimum order amounts, and payment
-          method restrictions for your tagged B2B customers.
+          Shopify&apos;s native B2B forces you to waste hours building complex
+          Company Profiles, assigning Locations, and managing catalogs just to
+          set up basic wholesale rules. WholesaleNeuron is the zero-friction
+          alternative: just add a tag to any standard customer account to
+          instantly automate B2B discounts, minimums, and payment methods.
         </p>
         {showForm && (
-          <Form className={styles.form} method="post">
+          <Form
+            className={`${styles.form} ${USE_TEMP_EARLY_ACCESS_CTA ? styles.formDisabled : ""}`}
+            method="post"
+            onSubmit={(event) => {
+              if (USE_TEMP_EARLY_ACCESS_CTA) {
+                event.preventDefault();
+              }
+            }}
+          >
             <div className={styles.field}>
               <label className={styles.label} htmlFor="shop">
                 Shop domain
@@ -54,47 +66,105 @@ export default function App() {
                   className={styles.input}
                   type="text"
                   name="shop"
+                  disabled={USE_TEMP_EARLY_ACCESS_CTA}
+                  aria-disabled={USE_TEMP_EARLY_ACCESS_CTA}
                 />
-                <button className={styles.button} type="submit">
+                <button
+                  className={styles.button}
+                  type="submit"
+                  disabled={USE_TEMP_EARLY_ACCESS_CTA}
+                  aria-disabled={USE_TEMP_EARLY_ACCESS_CTA}
+                >
                   Log in / Install
                 </button>
               </div>
               <span className={styles.hint}>
-                {errors?.shop ?? "e.g., your-store.myshopify.com"}
+                {USE_TEMP_EARLY_ACCESS_CTA
+                  ? "Install is paused — use Request Early Access above."
+                  : (errors?.shop ?? "e.g., your-store.myshopify.com")}
               </span>
             </div>
           </Form>
         )}
-        <ul className={styles.list}>
-          <li>
-            <strong className={styles.featureTitle}>
-              Tag-Based B2B Discounts
-            </strong>
-            <span className={styles.featureDesc}>
-              Automatically apply your configured percentage discount to tagged
-              wholesale buyers directly in the cart and checkout.
-            </span>
-          </li>
-          <li>
-            <strong className={styles.featureTitle}>
-              Minimum Order Amount
-            </strong>
-            <span className={styles.featureDesc}>
-              Enforce a required minimum order amount, preventing tagged
-              wholesale customers from checking out until the requirement is
-              met.
-            </span>
-          </li>
-          <li>
-            <strong className={styles.featureTitle}>
-              Restrict Payment Methods
-            </strong>
-            <span className={styles.featureDesc}>
-              Hide standard retail payment gateways at checkout so wholesale
-              buyers only see the specific B2B payment method you configure.
-            </span>
-          </li>
-        </ul>
+        <p className={styles.planNote}>
+          Note: The current Standard plan ($29/mo) supports one global wholesale
+          tier. Unlimited multi-tier PRO plan coming soon!
+        </p>
+        <div className={styles.planSections}>
+          <section className={styles.planSection} aria-labelledby="standard-plan-heading">
+            <div className={styles.planSectionHeader}>
+              <h2 id="standard-plan-heading" className={styles.standardPlanLabel}>
+                Standard Plan: Single-Tier
+              </h2>
+              <span className={styles.liveBadge}>Live</span>
+            </div>
+            <ul className={styles.standardGrid}>
+              <li className={styles.featureCard}>
+                <h3 className={styles.featureTitle}>B2B Discount</h3>
+                <span className={styles.featureDesc}>
+                  Apply a{" "}
+                  <strong className={styles.featureStrong}>
+                    store-wide percentage discount
+                  </strong>{" "}
+                  to your tagged wholesale buyers{" "}
+                  <strong className={styles.featureStrong}>
+                    instantly at checkout
+                  </strong>
+                  .
+                </span>
+              </li>
+              <li className={styles.featureCard}>
+                <h3 className={styles.featureTitle}>B2B Minimum Order</h3>
+                <span className={styles.featureDesc}>
+                  Enforce a{" "}
+                  <strong className={styles.featureStrong}>
+                    single minimum order amount
+                  </strong>
+                  , preventing tagged buyers from checking out below your
+                  required threshold.
+                </span>
+              </li>
+              <li className={styles.featureCard}>
+                <h3 className={styles.featureTitle}>B2B Approved Payments</h3>
+                <span className={styles.featureDesc}>
+                  <strong className={styles.featureStrong}>
+                    Hide standard retail payment gateways
+                  </strong>{" "}
+                  and only show your{" "}
+                  <strong className={styles.featureStrong}>
+                    approved B2B method
+                  </strong>{" "}
+                  (e.g., Net-30, Bank Wire) for tagged buyers.
+                </span>
+              </li>
+            </ul>
+          </section>
+
+          <section className={styles.planSection} aria-labelledby="pro-plan-heading">
+            <div className={styles.planSectionHeader}>
+              <h2 id="pro-plan-heading" className={styles.proPlanLabel}>
+                Pro Plan: Multi-Tier
+              </h2>
+              <span className={styles.comingSoonBadge}>Coming Soon</span>
+            </div>
+            <div className={styles.proCard}>
+              <h3 className={styles.proTitle}>PRO: Unlimited Tiers</h3>
+              <span className={styles.proDesc}>
+                Shopify standard caps you at 3 catalogs, forcing a{" "}
+                <strong className={styles.proStrong}>
+                  $2,500/mo Plus upgrade
+                </strong>{" "}
+                to add more. Pro gives you infinite flexibility to{" "}
+                <strong className={styles.proStrong}>
+                  create as many tiers as you like
+                </strong>
+                , there is no limit. Assign custom deals to a single VIP or
+                100+ buyers using simple tags—bypassing the Plus paywall
+                entirely.
+              </span>
+            </div>
+          </section>
+        </div>
       </div>
       <SiteFooter />
     </div>

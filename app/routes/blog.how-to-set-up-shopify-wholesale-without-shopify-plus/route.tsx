@@ -1,5 +1,10 @@
 import type { MetaFunction } from "react-router";
 
+import {
+  blogCtaHref,
+  blogCtaLabel,
+  primaryCtaIsExternal,
+} from "../../components/marketing/cta";
 import { SiteFooter } from "../../components/marketing/SiteFooter";
 import { SiteHeader } from "../../components/marketing/SiteHeader";
 import { FaqAccordion, type FaqItem } from "./FaqAccordion";
@@ -10,10 +15,9 @@ import styles from "./styles.module.css";
 const CANONICAL =
   "https://wholesale.suneuron.com/blog/how-to-set-up-shopify-wholesale-without-shopify-plus";
 const TITLE =
-  "How to Set Up a Shopify Wholesale Channel Without Shopify Plus (2026 Guide)";
+  "How to Set Up Shopify Wholesale Without Complex Company Profiles (2026 Guide)";
 const DESCRIPTION =
-  "Automate B2B wholesale pricing, customer tag discounts, cart minimums, and custom payment methods on standard Shopify plans without Shopify Plus.";
-const APP_URL = "https://apps.shopify.com/wholesaleneuron";
+  "Set up Shopify wholesale with customer tags—no Company Profiles, no forced New Customer Accounts. Automate B2B discounts, cart minimums, and payment methods while keeping classic password logins.";
 const DATE_PUBLISHED = "2026-10-20";
 const DATE_MODIFIED = "2026-10-26";
 const VIDEO_EMBED =
@@ -31,14 +35,38 @@ const FAQ_ITEMS: FaqItem[] = [
       "No theme surgery required. WholesaleNeuron runs on Shopify Functions and admin configuration, so your storefront theme stays untouched. That keeps upgrades safer and avoids fragile Liquid hacks that break on theme updates.",
   },
   {
-    question: "Does this work on Shopify Basic, Shopify, and Advanced—or only Plus?",
+    question: "Why use WholesaleNeuron instead of Shopify's free native B2B?",
     answer:
-      "WholesaleNeuron is built for standard Shopify plans. You do not need Shopify Plus ($2,500/mo) to automate tag-based discounts, minimum order amounts, and B2B payment filtering for tagged wholesale customers.",
+      'Shopify\'s native B2B requires you to switch to "New Customer Accounts" (which forces your buyers to use 6-digit email codes instead of passwords) and requires you to manage complex "Company Profiles." WholesaleNeuron lets you keep your classic password accounts. You just tag a customer "B2B", and our app handles the rest automatically at checkout.',
   },
   {
     question: "How is this different from discount codes or draft orders?",
     answer:
       "Discount codes leak when shared. Draft orders burn hours every week and break parts of the native checkout flow. WholesaleNeuron applies rules automatically at cart and checkout for tagged buyers only—no codes to police and no manual order drafting for every wholesale purchase.",
+  },
+  {
+    question:
+      "Can I set up different discount tiers for different customer groups (e.g., Gold, Silver, Bronze)?",
+    answer: (
+      <>
+        Currently, the $29/mo Standard plan supports one global B2B tag and rule
+        set. However, our upcoming <strong>Pro Plan</strong> will unlock
+        unlimited tag-based tiers without the $2,500/mo Shopify Plus upgrade—and
+        without burning catalogs on Company Profiles. Want a custom deal for one
+        VIP? Give them a unique tag. Want 100+ buyers on a Gold tier? Apply the
+        same tag to all of them. Same simple tag-mapping, zero complex store
+        setup. If you want early access, email{" "}
+        <a
+          href="mailto:support@wholesale.suneuron.com"
+          className={styles.faqLink}
+        >
+          support@wholesale.suneuron.com
+        </a>{" "}
+        to join the waitlist.
+      </>
+    ),
+    answerText:
+      "Currently, the $29/mo Standard plan supports one global B2B tag and rule set. However, our upcoming Pro Plan will unlock unlimited tag-based tiers without the $2,500/mo Shopify Plus upgrade—and without burning catalogs on Company Profiles. Want a custom deal for one VIP? Give them a unique tag. Want 100+ buyers on a Gold tier? Apply the same tag to all of them. Same simple tag-mapping, zero complex store setup. If you want early access, email support@wholesale.suneuron.com to join the waitlist.",
   },
 ];
 
@@ -78,7 +106,9 @@ const structuredData = {
         name: item.question,
         acceptedAnswer: {
           "@type": "Answer",
-          text: item.answer,
+          text:
+            item.answerText ??
+            (typeof item.answer === "string" ? item.answer : ""),
         },
       })),
     },
@@ -108,7 +138,8 @@ export const meta: MetaFunction = () => {
     { property: "article:section", content: "Shopify B2B" },
     {
       property: "article:tag",
-      content: "Shopify wholesale, B2B pricing, Shopify Plus alternative",
+      content:
+        "Shopify wholesale, B2B pricing, classic customer accounts, Company Profiles alternative",
     },
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: TITLE },
@@ -148,7 +179,7 @@ export default function WholesaleSetupGuide() {
         <header className={styles.hero}>
           <span className={styles.category}>Shopify B2B Guide</span>
           <h1 className={styles.title}>
-            How to Set Up a Shopify Wholesale Channel Without Shopify Plus
+            How to Set Up Shopify Wholesale Without Complex Company Profiles
             (2026 Guide)
           </h1>
           <div className={styles.metaRow}>
@@ -162,13 +193,17 @@ export default function WholesaleSetupGuide() {
 
         <section className={styles.section} aria-labelledby="problem-heading">
           <h2 id="problem-heading" className={styles.sectionTitle}>
-            The problem: Plus pricing vs. broken workarounds
+            The problem: Native B2B complexity and forced account migrations
           </h2>
           <p className={styles.lead}>
-            Shopify Plus unlocks native B2B tooling—at roughly{" "}
-            <strong>$2,500 per month</strong>. For growing wholesale brands on
-            Basic, Shopify, or Advanced, that is often a non-starter. So teams
-            improvise. Those improvisations quietly tax margin and time.
+            Shopify&apos;s native B2B on standard plans sounds great until you
+            try to set it up. It forces you to waste hours building
+            enterprise-style &apos;Company Profiles&apos;, assigning
+            &apos;Locations&apos;, and managing complex catalogs just to set up
+            basic wholesale rules. For growing brands that just want to tag a
+            wholesale buyer and automate their checkout, this forced complexity
+            is an administrative nightmare. WholesaleNeuron is the instant,
+            zero-friction alternative.
           </p>
           <ul className={styles.problemList}>
             <li className={styles.problemItem}>
@@ -188,18 +223,19 @@ export default function WholesaleSetupGuide() {
               </span>
             </li>
             <li className={styles.problemItem}>
-              <strong>Second “wholesale-only” store costs</strong>
+              <strong>The &quot;Company Profile&quot; Headache</strong>
               <span>
-                Running a duplicate store means duplicate themes, inventory
-                sync headaches, and another Shopify bill—without solving
-                checkout automation on your main site.
+                Shopify&apos;s native B2B forces you to waste hours managing
+                complex Company Profiles and Locations just to set up basic
+                wholesale purchasing rules.
               </span>
             </li>
           </ul>
           <p className={styles.paragraph}>
-            In 2026, you can run a clean wholesale channel on a standard plan:
-            tag B2B buyers, configure rules once, and let checkout enforce
-            pricing, minimums, and payment methods automatically.
+            In 2026, you can run a clean wholesale channel without Company
+            Profiles: keep classic password accounts, tag B2B buyers, configure
+            rules once, and let checkout enforce pricing, minimums, and payment
+            methods automatically.
           </p>
         </section>
 
@@ -208,8 +244,8 @@ export default function WholesaleSetupGuide() {
             The step-by-step solution with WholesaleNeuron
           </h2>
           <p className={styles.paragraph}>
-            Follow these five steps. No Shopify Plus, no theme code edits, and
-            no discount codes to babysit.
+            Follow these five steps. No Company Profiles, no forced passwordless
+            logins, no theme code edits, and no discount codes to babysit.
           </p>
 
           <div className={styles.step}>
@@ -282,12 +318,18 @@ export default function WholesaleSetupGuide() {
           <div className={styles.step}>
             <span className={styles.stepLabel}>Step 5</span>
             <h3 className={styles.stepTitle}>
-              Filter payment methods (bank wire vs. credit card)
+              Show approved B2B payment method only
             </h3>
             <p className={styles.paragraph}>
-              Show only the B2B payment method you approve—such as bank wire or
-              invoice terms—while hiding retail gateways that eat processing
-              fees on large wholesale carts.
+              Show only the specific B2B payment method you approve—such as bank
+              wire, net-30, or invoice terms—while hiding standard retail
+              gateways that eat processing fees on large wholesale carts.
+            </p>
+            <p className={styles.caveat}>
+              *Note: Due to Shopify&apos;s platform policies for stores based in
+              the USA and Canada, standard credit card options (like Shopify
+              Payments) will always remain visible at checkout alongside your
+              configured B2B method.*
             </p>
             <ScreenshotFigure
               src="/wholesalenueron-payment-method.png"
@@ -310,13 +352,13 @@ export default function WholesaleSetupGuide() {
           <p className={styles.paragraph}>
             Your DTC storefront stays conversion-optimized for consumers, while
             logged-in B2B accounts get a controlled wholesale channel on the
-            same catalog—without a second store or Shopify Plus.
+            same catalog—without Company Profiles or New Customer Accounts.
           </p>
         </section>
 
         <section className={styles.section} aria-labelledby="compare-heading">
           <h2 id="compare-heading" className={styles.sectionTitle}>
-            Comparison: Plus vs. manual vs. WholesaleNeuron
+            Comparison: Native B2B vs. manual vs. WholesaleNeuron
           </h2>
           <div className={styles.tableWrap}>
             <table className={styles.table}>
@@ -324,18 +366,21 @@ export default function WholesaleSetupGuide() {
                 <tr>
                   <th scope="col">Approach</th>
                   <th scope="col">Monthly cost</th>
-                  <th scope="col">Admin time</th>
-                  <th scope="col">Automation</th>
+                  <th scope="col">Setup</th>
+                  <th scope="col">Limits</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <th scope="row">Shopify Plus B2B</th>
-                  <td>~$2,500/mo</td>
-                  <td>Low once live</td>
-                  <td>Native enterprise B2B</td>
+                  <th scope="row">Shopify Native B2B</th>
+                  <td>$0 (Included)</td>
+                  <td>
+                    Hours of admin work (Requires Company Profiles &amp;
+                    Locations)
+                  </td>
+                  <td>Enterprise-style data structure</td>
                 </tr>
-                <tr>
+                <tr className={styles.warnRow}>
                   <th scope="row">Manual draft orders</th>
                   <td>$0 software</td>
                   <td>~10 hrs/week</td>
@@ -345,14 +390,40 @@ export default function WholesaleSetupGuide() {
                   <th scope="row" className={styles.highlightCol}>
                     WholesaleNeuron
                   </th>
-                  <td className={styles.highlightCol}>$29/mo</td>
-                  <td className={styles.highlightCol}>Minutes to configure</td>
+                  <td className={styles.highlightCol}>$29/mo Standard</td>
                   <td className={styles.highlightCol}>
-                    Tag discounts, MOV, payment filter
+                    <strong>&lt; 15 seconds</strong> (Just add a tag)
+                  </td>
+                  <td className={styles.highlightCol}>
+                    One global discount and rule set today. Pro (Coming Soon):
+                    unlimited tiers via the same simple tag-mapping—delivering
+                    enterprise flexibility without the $2,500/mo price tag.
                   </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div className={styles.tableNote}>
+            <h4 className={styles.tableNoteHeading}>
+              The Game Changer: Unlimited Tiers Pro (Coming Soon)
+            </h4>
+            <p className={styles.tableNoteText}>
+              <strong className={styles.tableNoteLead}>
+                The 3-Tier Paywall:
+              </strong>{" "}
+              Standard Shopify plans hard-cap your native B2B setup at just 3
+              active catalogs. If you need a 4th tier for a custom VIP client,
+              Shopify forces you to upgrade to the $2,500/month Plus plan.
+              WholesaleNeuron&apos;s Standard plan provides one global rule set
+              today, but our upcoming Pro tier will unlock{" "}
+              <strong className={styles.tableNoteAccent}>unlimited tiers</strong>{" "}
+              using our simple tag-mapping system—allowing you to bypass the
+              Plus paywall completely at a{" "}
+              <strong className={styles.tableNoteAccent}>
+                fraction of the enterprise cost
+              </strong>
+              .
+            </p>
           </div>
         </section>
 
@@ -369,16 +440,29 @@ export default function WholesaleSetupGuide() {
           </p>
           <div className={styles.videoWrap}>
             {VIDEO_EMBED.includes("PLACEHOLDER_VIDEO_ID") ? (
-              <div className={styles.videoPlaceholder}>
+              <div
+                className={styles.videoPlaceholder}
+                role="img"
+                aria-label="Video coming soon"
+              >
+                <span className={styles.videoSoonBadge}>Coming soon</span>
                 <div className={styles.playIcon} aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </div>
-                <strong>WholesaleNeuron walkthrough</strong>
+                <strong className={styles.videoSoonTitle}>
+                  Video coming soon!!
+                </strong>
                 <p>
-                  YouTube embed placeholder — replace{" "}
-                  <code>PLACEHOLDER_VIDEO_ID</code> when the video is live.
+                  We&apos;re filming the full WholesaleNeuron walkthrough.
+                  Check back shortly—or request early access and we&apos;ll
+                  walk you through live.
                 </p>
               </div>
             ) : (
@@ -404,19 +488,21 @@ export default function WholesaleSetupGuide() {
 
         <section className={styles.ctaBox} aria-labelledby="cta-heading">
           <h2 id="cta-heading" className={styles.ctaTitle}>
-            Ready to automate wholesale on a standard Shopify plan?
+            Ready for wholesale without Company Profiles?
           </h2>
           <p className={styles.ctaBody}>
-            Install WholesaleNeuron, tag your B2B buyers, and go live without
-            Shopify Plus, draft orders, or leaky discount codes.
+            Install WholesaleNeuron, keep classic password accounts, tag your
+            B2B buyers, and go live without native B2B complexity, draft orders,
+            or leaky discount codes.
           </p>
           <a
             className={styles.ctaButton}
-            href={APP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={blogCtaHref}
+            {...(primaryCtaIsExternal
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {})}
           >
-            Install WholesaleNeuron (7-Day Free Trial)
+            {blogCtaLabel}
           </a>
         </section>
       </main>
@@ -426,16 +512,17 @@ export default function WholesaleSetupGuide() {
       <div className={styles.stickyCta}>
         <div className={styles.stickyCtaInner}>
           <p className={styles.stickyCopy}>
-            <strong>Wholesale without Shopify Plus</strong>
-            Automate discounts, minimums, and B2B payments.
+            <strong>Wholesale without Company Profiles</strong>
+            Keep classic passwords. Automate tag-based B2B rules.
           </p>
           <a
             className={styles.stickyButton}
-            href={APP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={blogCtaHref}
+            {...(primaryCtaIsExternal
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {})}
           >
-            Install WholesaleNeuron (7-Day Free Trial)
+            {blogCtaLabel}
           </a>
         </div>
       </div>

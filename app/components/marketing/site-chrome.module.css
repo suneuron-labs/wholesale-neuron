@@ -12,7 +12,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  max-width: 64rem;
+  max-width: 80rem;
   margin: 0 auto;
   padding: 0.85rem 1.5rem;
   box-sizing: border-box;
@@ -22,9 +22,10 @@
   display: inline-flex;
   align-items: baseline;
   text-decoration: none;
-  font-weight: 800;
-  font-size: 1.05rem;
-  letter-spacing: -0.03em;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
   flex-shrink: 0;
 }
 
@@ -39,17 +40,20 @@
 .nav {
   display: flex;
   align-items: center;
-  gap: 0.35rem 1.25rem;
+  gap: 0.5rem 1.25rem;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 
 .navLink {
+  display: inline-flex;
+  align-items: center;
   color: #475569;
   font-size: 0.9rem;
   font-weight: 600;
   text-decoration: none;
   padding: 0.35rem 0.15rem;
+  line-height: 1.25;
 }
 
 .navLink:hover {
@@ -63,15 +67,16 @@
 .headerCta {
   display: inline-flex;
   align-items: center;
-  height: 2.25rem;
-  padding: 0 0.9rem;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
   border-radius: 0.5rem;
   background: #fc5739;
   color: #fff;
   font-size: 0.875rem;
   font-weight: 600;
+  line-height: 1.25;
   text-decoration: none;
-  transition: background-color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .headerCta:hover {
@@ -82,8 +87,8 @@
   display: none;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
   background: #fff;
@@ -96,13 +101,11 @@
 }
 
 .footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 1.25rem 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
   width: 100%;
-  max-width: 64rem;
+  max-width: 80rem;
   margin: 0 auto;
   padding: 1.5rem 1.5rem 0.5rem;
   box-sizing: border-box;
@@ -112,8 +115,10 @@
 
 .footerBrand {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  text-align: left;
 }
 
 .footerLogo {
@@ -122,10 +127,21 @@
   width: auto;
 }
 
-.footerColumns {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem 2.5rem;
+.footerBrandCopy {
+  margin: 0.65rem 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.footerDisclaimer {
+  margin: 1rem 0 0;
+  max-width: 24rem;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-align: left;
 }
 
 .footerColumn {
@@ -133,7 +149,6 @@
   flex-direction: column;
   gap: 0.45rem;
   align-items: flex-start;
-  min-width: 10rem;
 }
 
 .footerColumnTitle {
@@ -156,6 +171,23 @@
   text-decoration: underline;
 }
 
+@media only screen and (min-width: 48rem) {
+  .footer {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .footerBrand {
+    grid-column: span 2;
+  }
+
+  .footerResources,
+  .footerSupport {
+    grid-column: span 1;
+  }
+}
+
 @media only screen and (max-width: 40rem) {
   .menuToggle {
     display: inline-flex;
@@ -170,7 +202,7 @@
     flex-direction: column;
     align-items: stretch;
     gap: 0.35rem;
-    max-width: 64rem;
+    max-width: 80rem;
     margin: 0 auto;
     padding: 0 1.5rem 1rem;
     box-sizing: border-box;
@@ -183,7 +215,7 @@
     width: 100%;
     justify-content: center;
     text-align: center;
-    padding: 0.7rem 0.9rem;
+    padding: 0.7rem 1.25rem;
     border-radius: 0.5rem;
   }
 
@@ -193,16 +225,16 @@
   }
 
   .footer {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+    justify-items: start;
+    text-align: left;
   }
 
-  .footerColumns {
-    justify-content: center;
+  .footerBrand {
+    align-items: flex-start;
+    text-align: left;
   }
 
   .footerColumn {
-    align-items: center;
+    align-items: flex-start;
   }
 }
