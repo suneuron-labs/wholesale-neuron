@@ -1,5 +1,8 @@
 import type { MetaFunction } from "react-router";
 
+import { SiteFooter } from "../components/marketing/SiteFooter";
+import { SiteHeader } from "../components/marketing/SiteHeader";
+
 export const meta: MetaFunction = () => {
   return [
     { title: "Privacy Policy | WholesaleNeuron" },
@@ -15,21 +18,25 @@ const styles = {
   page: {
     margin: 0,
     minHeight: "100vh",
-    background: "#f6f6f7",
-    color: "#202223",
+    display: "flex" as const,
+    flexDirection: "column" as const,
+    background: "#f8fafc",
+    color: "#0f172a",
     fontFamily:
-      'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+      'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
     lineHeight: 1.6,
   },
   main: {
     boxSizing: "border-box" as const,
     maxWidth: "800px",
+    width: "100%",
     margin: "0 auto",
-    padding: "48px 24px 72px",
+    padding: "48px 24px 48px",
+    flex: 1,
   },
   card: {
     background: "#ffffff",
-    border: "1px solid #e1e3e5",
+    border: "1px solid #e2e8f0",
     borderRadius: "12px",
     padding: "32px",
   },
@@ -41,7 +48,7 @@ const styles = {
   },
   updated: {
     margin: "0 0 28px",
-    color: "#6d7175",
+    color: "#64748b",
     fontSize: "0.95rem",
   },
   heading: {
@@ -62,13 +69,14 @@ const styles = {
     marginBottom: "8px",
   },
   link: {
-    color: "#2c6ecb",
+    color: "#fc5739",
   },
 };
 
 export default function PrivacyPolicy() {
   return (
     <div style={styles.page}>
+      <SiteHeader active="privacy" />
       <main style={styles.main}>
         <article style={styles.card}>
           <h1 style={styles.title}>Privacy Policy</h1>
@@ -219,6 +227,7 @@ export default function PrivacyPolicy() {
           </p>
         </article>
       </main>
+      <SiteFooter />
     </div>
   );
 }

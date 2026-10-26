@@ -1,6 +1,8 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { redirect, Form, useActionData, useLoaderData } from "react-router";
 
+import { SiteFooter } from "../../components/marketing/SiteFooter";
+import { SiteHeader } from "../../components/marketing/SiteHeader";
 import { login } from "../../shopify.server";
 import { loginErrorMessage } from "./error.server";
 
@@ -29,6 +31,8 @@ export default function App() {
 
   return (
     <div className={styles.index}>
+      <SiteHeader active="home" />
+
       <div className={styles.content}>
         <h1 className={styles.heading}>
           <span className={styles.logoWholesale}>Wholesale</span>
@@ -92,22 +96,7 @@ export default function App() {
           </li>
         </ul>
       </div>
-      <footer className={styles.footer}>
-        <div className={styles.footerBrand}>
-          <img
-            className={styles.footerLogo}
-            src="/suneuron-logo.png"
-            alt="Suneuron Logo"
-          />
-          <span>© 2026 SUNEURON PTE. LTD.</span>
-        </div>
-        <div className={styles.footerLinks}>
-          <a href="mailto:support@wholesale.suneuron.com">
-            support@wholesale.suneuron.com
-          </a>
-          <a href="/privacy">Privacy Policy</a>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
