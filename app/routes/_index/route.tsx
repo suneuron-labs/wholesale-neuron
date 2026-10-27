@@ -1,13 +1,30 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "react-router";
 import { redirect, Form, useActionData, useLoaderData } from "react-router";
 
 import { USE_TEMP_EARLY_ACCESS_CTA } from "../../components/marketing/cta";
 import { SiteFooter } from "../../components/marketing/SiteFooter";
 import { SiteHeader } from "../../components/marketing/SiteHeader";
+import { usePageSeo } from "../../components/marketing/usePageSeo";
 import { login } from "../../shopify.server";
 import { loginErrorMessage } from "./error.server";
 
 import styles from "./styles.module.css";
+
+const PAGE_TITLE =
+  "WholesaleNeuron | Shopify B2B & Multi-Tier Wholesale App";
+const PAGE_DESCRIPTION =
+  "Set up Shopify B2B in less than a minute without the Plus upgrade. Automate wholesale checkout with tags and bypass native 3-tier limits with our upcoming unlimited tiers Pro plan.";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: PAGE_TITLE },
+    { name: "description", content: PAGE_DESCRIPTION },
+  ];
+};
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -29,6 +46,8 @@ export default function App() {
   const { showForm } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const errors = actionData?.errors;
+
+  usePageSeo(PAGE_TITLE, PAGE_DESCRIPTION);
 
   return (
     <div className={styles.index}>

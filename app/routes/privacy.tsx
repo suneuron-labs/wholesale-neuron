@@ -2,15 +2,16 @@ import type { MetaFunction } from "react-router";
 
 import { SiteFooter } from "../components/marketing/SiteFooter";
 import { SiteHeader } from "../components/marketing/SiteHeader";
+import { usePageSeo } from "../components/marketing/usePageSeo";
+
+const PAGE_TITLE = "Privacy Policy | WholesaleNeuron";
+const PAGE_DESCRIPTION =
+  "Privacy policy and data handling practices for the WholesaleNeuron Shopify application.";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Privacy Policy | WholesaleNeuron" },
-    {
-      name: "description",
-      content:
-        "WholesaleNeuron privacy policy covering GDPR and CCPA compliance, data retention, Shopify privacy webhooks, and merchant support contact.",
-    },
+    { title: PAGE_TITLE },
+    { name: "description", content: PAGE_DESCRIPTION },
   ];
 };
 
@@ -74,6 +75,8 @@ const styles = {
 };
 
 export default function PrivacyPolicy() {
+  usePageSeo(PAGE_TITLE, PAGE_DESCRIPTION);
+
   return (
     <div style={styles.page}>
       <SiteHeader active="privacy" />

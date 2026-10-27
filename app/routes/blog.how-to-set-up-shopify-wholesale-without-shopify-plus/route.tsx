@@ -7,6 +7,7 @@ import {
 } from "../../components/marketing/cta";
 import { SiteFooter } from "../../components/marketing/SiteFooter";
 import { SiteHeader } from "../../components/marketing/SiteHeader";
+import { usePageSeo } from "../../components/marketing/usePageSeo";
 import { FaqAccordion, type FaqItem } from "./FaqAccordion";
 import { ScreenshotFigure } from "./ScreenshotFigure";
 import { SupportCallout } from "./SupportCallout";
@@ -15,9 +16,9 @@ import styles from "./styles.module.css";
 const CANONICAL =
   "https://wholesale.suneuron.com/blog/how-to-set-up-shopify-wholesale-without-shopify-plus";
 const TITLE =
-  "How to Set Up Shopify Wholesale Without Complex Company Profiles (2026 Guide)";
+  "How to Set Up Shopify Wholesale & Multi-Tier Pricing Without Plus";
 const DESCRIPTION =
-  "Set up Shopify wholesale with customer tags—no Company Profiles, no forced New Customer Accounts. Automate B2B discounts, cart minimums, and payment methods while keeping classic password logins.";
+  "Learn how to bypass Shopify Plus and native B2B complexities. Manage wholesale customers with simple tags and beat the 3-tier limit with our soon-to-launch unlimited tiers Pro plan.";
 const DATE_PUBLISHED = "2026-10-20";
 const DATE_MODIFIED = "2026-10-26";
 const VIDEO_EMBED =
@@ -163,6 +164,8 @@ export const meta: MetaFunction = () => {
 };
 
 export default function WholesaleSetupGuide() {
+  usePageSeo(TITLE, DESCRIPTION);
+
   return (
     <div className={styles.page}>
       <script
