@@ -37,7 +37,7 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Why use WholesaleNeuron instead of Shopify's free native B2B?",
     answer:
-      'Shopify\'s native B2B requires you to switch to "New Customer Accounts" (which forces your buyers to use 6-digit email codes instead of passwords) and requires you to manage complex "Company Profiles." WholesaleNeuron lets you keep your classic password accounts. You just tag a customer "B2B", and our app handles the rest automatically at checkout.',
+      'Shopify\'s native B2B requires you to set up and manage complex Company Profiles, Locations, and customized Catalogs. This is time-consuming and often highly inefficient for smaller operations. WholesaleNeuron lets you simply tag a customer (e.g., "B2B", "Wholesale", or "VIP"), set up the discount, minimum order, and B2B payment rules in 15 seconds, and our app handles the rest automatically at checkout. This method is extremely scalable—whether you have a single wholesale buyer or 100+ customers—with the exact same ease, zero stress, and no unnecessary ongoing maintenance.',
   },
   {
     question: "How is this different from discount codes or draft orders?",
@@ -49,13 +49,23 @@ const FAQ_ITEMS: FaqItem[] = [
       "Can I set up different discount tiers for different customer groups (e.g., Gold, Silver, Bronze)?",
     answer: (
       <>
-        Currently, the $29/mo Standard plan supports one global B2B tag and rule
-        set. However, our upcoming <strong>Pro Plan</strong> will unlock
-        unlimited tag-based tiers without the $2,500/mo Shopify Plus upgrade—and
-        without burning catalogs on Company Profiles. Want a custom deal for one
+        Currently, the $29/mo Standard plan supports a single tier rule set per
+        store. However, our soon to be launched <strong>Pro Plan</strong> will
+        unlock{" "}
+        <strong className={styles.tableNoteAccent}>
+          unlimited tag-based tiers
+        </strong>
+        —completely bypassing Shopify&apos;s native 3-tier restriction. You get
+        infinite pricing flexibility{" "}
+        <strong className={styles.tableNoteAccent}>
+          without the $2,500/mo Shopify Plus upgrade
+        </strong>
+        , and without the headache of managing separate price lists and Company
+        Profiles. Want a custom deal for one
         VIP? Give them a unique tag. Want 100+ buyers on a Gold tier? Apply the
-        same tag to all of them. Same simple tag-mapping, zero complex store
-        setup. If you want early access, email{" "}
+        same &quot;Gold&quot; tag to all of them. It&apos;s the same simple
+        setup with zero store bloat. If you want early access to the Pro Plan,
+        email{" "}
         <a
           href="mailto:support@wholesale.suneuron.com"
           className={styles.faqLink}
@@ -66,7 +76,7 @@ const FAQ_ITEMS: FaqItem[] = [
       </>
     ),
     answerText:
-      "Currently, the $29/mo Standard plan supports one global B2B tag and rule set. However, our upcoming Pro Plan will unlock unlimited tag-based tiers without the $2,500/mo Shopify Plus upgrade—and without burning catalogs on Company Profiles. Want a custom deal for one VIP? Give them a unique tag. Want 100+ buyers on a Gold tier? Apply the same tag to all of them. Same simple tag-mapping, zero complex store setup. If you want early access, email support@wholesale.suneuron.com to join the waitlist.",
+      "Currently, the $29/mo Standard plan supports a single tier rule set per store. However, our soon to be launched Pro Plan will unlock unlimited tag-based tiers—completely bypassing Shopify's native 3-tier restriction. You get infinite pricing flexibility without the $2,500/mo Shopify Plus upgrade, and without the headache of managing separate price lists and Company Profiles. Want a custom deal for one VIP? Give them a unique tag. Want 100+ buyers on a Gold tier? Apply the same \"Gold\" tag to all of them. It's the same simple setup with zero store bloat. If you want early access to the Pro Plan, email support@wholesale.suneuron.com to join the waitlist.",
   },
 ];
 
@@ -512,8 +522,9 @@ export default function WholesaleSetupGuide() {
       <div className={styles.stickyCta}>
         <div className={styles.stickyCtaInner}>
           <p className={styles.stickyCopy}>
-            <strong>Wholesale without Company Profiles</strong>
-            Keep classic passwords. Automate tag-based B2B rules.
+            <strong>Wholesale without the Complex Setup</strong>
+            Just tag your customers—no Company Profiles, Locations, or
+            customized Catalogs required.
           </p>
           <a
             className={styles.stickyButton}

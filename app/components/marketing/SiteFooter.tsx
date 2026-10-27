@@ -30,7 +30,7 @@ export function SiteFooter({ compactBottom = false }: SiteFooterProps) {
 
       <div className={`${styles.footerColumn} ${styles.footerResources}`}>
         <p className={styles.footerColumnTitle}>Resources</p>
-        <Link to={BLOG_GUIDE_PATH}>Shopify Wholesale Guide (No Plus)</Link>
+        <Link to={BLOG_GUIDE_PATH}>WholesaleNeuron Guide</Link>
         <Link to="/privacy">Privacy Policy</Link>
       </div>
 
