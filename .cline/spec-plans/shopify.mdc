@@ -1,0 +1,415 @@
+---
+alwaysApply: false
+---
+
+## 1.a User instructions (standing)
+
+- Follow `.cursor/rules/shopify.mdc` for App Store architecture, GraphQL, webhooks, privacy, Polaris, Shopify Billing, and automated tests.
+- Product requirements live in `.cursor/spec-plans/app-spec.md`.
+- Build plan, progress, open questions, and session memory live in `.cursor/spec-plans/plan-and-tracker.md`. Read that file at the start of each session and update it as decisions lock.
+- Implementation starts only after the user says to build. Support contact is `support@wholesale.suneuron.com`. Brand name is WholesaleNeuron. The Partner app exists, distribution is Public, and slices 0 through 2 are coded. Later slices stay pending until the user says to build them (see the plan tracker).
+
+## 1.b Build philosophy (mandatory)
+
+Test first on every slice. Do not write production code for a behavior until a failing automated test exists for it.
+
+1. **Write the test first.** Unit or route test that fails for the behavior in this slice.
+2. **Build the minimum code** that makes that test pass. Refactor only while the suite stays green.
+3. **Run the full automated suite** (`npm test` or the project equivalent). If anything fails, fix it and re-run until every automated test passes.
+4. **Hand over to the user** only after the suite is green. The handover includes a detailed manual test script: exact steps, what to click or type, and the expected result for each case. Manual Shopify Admin / checkout checks are in addition to the automated suite. They do not replace it.
+
+Do not say a slice is done while any automated test is failing. Do not ask the user to manually verify code that has not passed `npm test`.
+
+## 2. API Operations & GraphQL Standards (No REST)
+- **Authentication Helper:** Always authenticate requests via:
+  ```typescript
+  const { admin, session } = await shopify.authenticate.admin(request);
+
+```
+
+* **Execution:** Always use `admin.graphql(...)` with tagged `#graphql` template strings.
+* **Error Inspection:** Shopify GraphQL mutations return HTTP status `200` even when operations fail. You MUST check `data.{mutationName}.userErrors` on every mutation execution. If `userErrors` is non-empty, log the error and handle it explicitly.
+* **Global Identifiers:** Always pass and validate full Shopify GIDs (e.g., `gid://shopify/Order/1234567890`).
+
+---
+
+## 3. Mandatory App Store Compliance & Webhooks
+
+Every Shopify app submitted to the App Store requires specific lifecycle and compliance webhooks.
+
+### A. Mandatory GDPR / Privacy Endpoints
+
+You must register and implement handlers for all three mandatory privacy endpoints (configured in `shopify.app.toml` or `app/routes/webhooks.tsx`):
+
+1. `CUSTOMERS_DATA_REQUEST`: Return customer data if stored, or HTTP 200 if no PII is retained.
+2. `CUSTOMERS_REDACT`: Purge any customer-associated records from the database and return HTTP 200.
+3. `SHOP_REDACT`: 48 hours after an app uninstall, purge all store-related configuration, logs, and tokens from Prisma for that `shop_domain`.
+
+### B. Uninstallation Lifecycle (`APP_UNINSTALLED`)
+
+* Subscribe to `APP_UNINSTALLED`.
+* When triggered:
+* Mark the merchant's settings as `isInstalled: false`.
+* Delete or invalidate active sessions in `db.session` to maintain security.
+* Return HTTP 200 immediately.
+
+
+
+---
+
+## 4. Webhook Processing & Idempotency Standard
+
+Shopify guarantees at-least-once delivery; webhooks WILL duplicate during retries or network spikes. Every webhook implementation must follow this state pipeline:
+
+### Execution Pipeline:
+
+1. **Deduplication / Idempotency Check:**
+* Query the database using a compound key `[shop, eventId]` or `[shop, orderId]`.
+* If a record exists with status `SUCCESS` or `PROCESSING`, exit immediately with `new Response(null, { status: 200 })`.
+
+
+2. **Initial State Persistence:**
+* Record an entry in the database with status `RECEIVED` before triggering external network calls.
+
+
+3. **Condition Evaluation:**
+* If business logic conditions are NOT met (e.g., total spend < threshold), update status to `SKIPPED`, log the reason, and exit with HTTP 200.
+
+
+4. **Mutation Execution:**
+* Update status to `PROCESSING`.
+* Execute the GraphQL mutation via `admin.graphql`.
+* Inspect `userErrors`.
+
+
+5. **State Finalization:**
+* If successful: Update status to `SUCCESS` with completion timestamp.
+* If mutation or runtime fails: Catch exception, update status to `FAILED`, record error message in `failureReason`, and return HTTP 200 to prevent infinite Shopify delivery retries.
+
+### CLI `shopify app webhook trigger` vs real store events (generic — every app)
+
+`npx shopify app webhook trigger ... --address http://localhost:{port}/webhooks/...` is useful for **delivery plumbing** only. It is **not** an end-to-end store test:
+
+1. **Fake shop domain:** The sample payload almost always uses `shop.myshopify.com`, not your linked development store. Your dashboard queries `OrderAuditLog` / settings by `session.shop` (e.g. `your-store.myshopify.com`), so you will see **no row** in the merchant UI even when the CLI prints “Localhost delivery successful.”
+2. **Often no offline session / `admin`:** `authenticate.webhook` may succeed HMAC-wise while `session` / `admin` are missing for that fake shop. Early `if (!session || !admin) return 200` with **no DB write** looks like “webhook worked but app did nothing.”
+3. **No real Admin mutation:** Without `admin` for the real shop, `tagsAdd` (or any GraphQL side effect) cannot run against Shopify.
+
+**Required implementation pattern for every webhook that mutates Shopify:**
+
+* **Always persist an audit row** after auth (at least `RECEIVED` → `SKIPPED` / `FAILED` / `SUCCESS`), even when `admin` is null.
+* If the business decision would mutate Shopify but `admin` is missing → set `FAILED` with `failureReason` like `missing_offline_session_or_admin` and still return HTTP 200.
+* Never treat CLI “delivery successful” as proof of tagging / billing / merchant-visible activity.
+* **End-to-end proof:** perform the real Admin action on the linked development store (e.g. create a paid order above threshold). Use CLI trigger only to verify the route responds.
+* Automated tests must cover the `admin: null` path (expect `FAILED` / audit written) in addition to success and skip paths.
+
+Document this in EmptyState / support copy if merchants (or you) might confuse CLI triggers with live orders.
+
+---
+
+## 5. Data Privacy & Zero-PII Architecture
+
+* **Data Minimization:** Never persist Customer PII (Personally Identifiable Information) such as customer full names, email addresses, phone numbers, or physical delivery addresses in your local/remote database unless explicitly required by the core app function.
+* **Audit Identifiers Only:** Store resource IDs (`orderId`, `productId`, `customerId`), numeric values (`totalAmount`), and operational tags/flags (`status`, `appliedTag`).
+
+---
+
+## 6. Database Schema & Prisma Rules
+
+* **Local Database:** Use Neon Postgres only, via `DATABASE_URL` (pooled) and `DIRECT_URL` (unpooled). Do not add a local SQLite database.
+* **Portability:** Prefer standard Prisma field types so migrations apply cleanly to Neon Postgres.
+* **Standard Audit Log Model Template:**
+```prisma
+enum ExecutionStatus {
+  RECEIVED
+  PROCESSING
+  SUCCESS
+  SKIPPED
+  FAILED
+}
+
+model OrderAuditLog {
+  id            Int             @id @default(autoincrement())
+  shop          String
+  orderId       String          // e.g. "gid://shopify/Order/12345"
+  orderName     String          // e.g. "#1001"
+  orderTotal    Float
+  appliedTag    String?
+  status        ExecutionStatus @default(RECEIVED)
+  failureReason String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@unique([shop, orderId])
+  @@index([shop, createdAt])
+}
+
+```
+
+
+* Apply schema updates using `npx prisma db push` during prototyping.
+
+---
+
+## 7. Frontend UI & Polaris Layout Rules
+
+* **Strict Polaris v12+ Components:**
+* DO NOT use deprecated components: `<Stack>`, `<VerticalStack>`, `<HorizontalStack>`.
+* ALWAYS use `<BlockStack>` (for vertical layouts) and `<InlineStack>` (for horizontal layouts).
+* Use Polaris primitives: `<Page>`, `<Layout>`, `<Layout.Section>`, `<Card>`, `<Text>`, `<Button>`, `<Banner>`, `<TextField>`, `<Checkbox>`.
+
+
+* **App Bridge v4 Integration:**
+* Use App Bridge primitives for page title bars, contextual actions, modals, and toasts.
+* Do not build custom floating notification popups when an App Bridge Toast or Polaris Banner is appropriate.
+
+
+* **Merchant Transparency:**
+* Every administrative app must provide an Activity / Audit Log table (`<IndexTable>` or `<DataTable>`) on its settings dashboard showing recent runs, timestamps, and status tags (`SUCCESS`, `SKIPPED`, `FAILED`).
+* When empty, always render an `<EmptyState>` guide.
+
+
+
+---
+
+## 8. Configuration & Scopes Discipline
+
+* App permissions (scopes) and subscriptions are declarative. Maintain them in `shopify.app.toml`.
+* When implementing a feature requiring new scopes (e.g., `read_orders, write_orders`), prompt the user to:
+1. Update the `scopes` string in `shopify.app.toml`.
+2. Restart the dev process with `npm run dev -- --reset` to trigger scope re-authorization in the test store.
+
+
+
+---
+
+## 9. Official Documentation References
+
+When looking up API schemas, component props, or webhook payloads, rely on these resources:
+
+* GraphQL Admin API: `https://shopify.dev/docs/api/admin-graphql`
+* Shopify Remix SDK: `https://shopify.dev/docs/api/shopify-app-remix`
+* Polaris Components: `https://polaris.shopify.com/components`
+* App Bridge v4: `https://shopify.dev/docs/api/app-bridge-library`
+* App Configuration TOML: `https://shopify.dev/docs/apps/tools/cli/configuration`
+
+It covers about **90% of core technical compliance and architecture**, but it is missing one non-negotiable commercial requirement: **The Shopify Billing API**.
+
+If your goal is to charge merchants $29 to $49/month, Shopify strictly forbids external payment processors (Stripe, Lemon Squeezy, PayPal) for apps listed on their App Store. Apps that include external payment links face immediate rejection. All recurring fees must be billed directly through Shopify's Native Billing API.
+
+---
+
+## 10. Native Monetization & Billing Standard
+
+- **Zero Third-Party Gateways:** Never import Stripe, Lemon Squeezy, or custom credit card forms. All billing must use Shopify's native Billing API (or Shopify App Pricing for App Store–managed plans). Custom/third-party checkout for app fees is an App Store rejection.
+
+### A. Public distribution is mandatory for Billing API (non-negotiable)
+
+Shopify returns:
+
+`Apps without a public distribution cannot use the Billing API`
+
+whenever `billing.require` / `billing.request` / `appSubscriptionCreate` runs against an app that is still **Custom** (or has no Public distribution selected).
+
+**This is generic — it will happen on every new Partner/CLI app until distribution is Public.**
+
+Required setup for every billable app:
+
+1. In Partner Dashboard → **App distribution** → select the app → **Distribution** → choose **Public** (Shopify App Store).
+2. Set `distribution: AppDistribution.AppStore` in `shopify.server.ts` (or the React Router equivalent).
+3. **Warning:** Distribution method is often **permanent**. Prefer a dedicated **dev/public** app instance for learning; do not lock a throwaway custom app if you need billing later on the same client ID.
+4. Custom distribution apps **cannot** use Shopify billing — only Public can.
+
+Also complete early (blocks `orders/*` webhooks similarly):
+
+- Partner Dashboard → **API access** → **Protected customer data access** → save Step 1 (dev-store-only apps: no full review required).
+
+### B. Required code pattern (every new app)
+
+Do **not** call raw `billing.require` alone in loaders without handling the public-distribution failure. Extract a shared helper (e.g. `app/billing.server.ts`) used by all paid routes:
+
+1. Define plan constants (`BASIC_MONTHLY_PLAN`, amount, currency, trial days).
+2. Configure `billing: { [PLAN]: { lineItems: [...], trialDays } }` on `shopifyApp(...)`.
+3. Implement `requireAppSubscription(billing)` that:
+   - Calls `billing.require({ plans, isTest, onFailure: () => billing.request({ plan, isTest, trialDays }) })`.
+   - On failure, if `NODE_ENV !== "production"` **and** the error message / `errorData` contains `"public distribution"`, **bypass** and return `{ billingBypassed: true, bypassReason }` so local demos still load.
+   - In production, **rethrow** — never silently skip billing for live merchants.
+4. Paid route loaders/actions call the helper; if `billingBypassed`, show a Polaris/web-component **warning banner** telling the developer to set Public distribution.
+5. Cover with automated tests: plan constants; `isPublicDistributionBillingError`; bypass path in non-production.
+
+Example shape (adapt package imports to Remix vs React Router template):
+
+```typescript
+export async function requireAppSubscription(billing: BillingClient) {
+  try {
+    await billing.require({
+      plans: [BASIC_MONTHLY_PLAN],
+      isTest: process.env.NODE_ENV !== "production",
+      onFailure: async () =>
+        billing.request({
+          plan: BASIC_MONTHLY_PLAN,
+          isTest: process.env.NODE_ENV !== "production",
+          trialDays: BILLING_TRIAL_DAYS,
+        }),
+    });
+    return { billingActive: true, billingBypassed: false, bypassReason: null };
+  } catch (error) {
+    if (
+      process.env.NODE_ENV !== "production" &&
+      isPublicDistributionBillingError(error)
+    ) {
+      return {
+        billingActive: false,
+        billingBypassed: true,
+        bypassReason:
+          "Billing API requires Public (App Store) distribution. Set Partner Dashboard → Distribution, then reload. Dev bypass is active.",
+      };
+    }
+    throw error;
+  }
+}
+```
+
+### C. Scaffold / CLI gotchas that also break first-run billing & webhooks
+
+Apply these on **every** new app scaffold (learned from VIP Order Tagger):
+
+| Symptom | Cause | Fix |
+|--------|--------|-----|
+| `Failed to start dev preview` + invalid `...default-app-home/webhooks/...` | `application_url` left as extension-only placeholder | Set `application_url = "https://localhost"` (and auth redirects); keep `automatically_update_urls_on_dev = true` |
+| `not approved to subscribe to webhook topics containing protected customer data` | PCD not declared | Partner Dashboard → Protected customer data access → Save Step 1 |
+| `Apps without a public distribution cannot use the Billing API` / blank embedded app after `billing.request` | Custom / unset distribution; `billing.request` redirects or throws | Use `billing.check` + **dev bypass** (do not call `request` unless `ENFORCE_BILLING=1`); Public distribution for real charges |
+| CLI `webhook trigger` succeeds but no audit for your store | Sample payload shop is `shop.myshopify.com`, often no offline session | Still record audit; for real `tagsAdd` place an order on the **dev store** |
+| Embedded app blank/slow; paired `Authenticating admin request` logs | `authenticate.admin` in **both** `app.tsx` layout and leaf route — loaders run **in parallel**, so every navigation pays 2× auth (+ billing) | Authenticate (and billing) only in **leaf** routes; layout returns `apiKey` only. Optional short TTL cache for `billing.check` by shop. Single-page apps: omit nested `<s-app-nav>` so Admin doesn’t show a duplicate child under the app name. |
+| CLI rewrites `shopify.app.toml` array spacing / strips topics | `shopify app dev` / `--reset` | Re-add webhook subscriptions; make config tests accept `[ "topic" ]` spacing |
+| Missing web process | Only `shopify.web.toml.liquid` present | Ensure a concrete `shopify.web.toml` exists for the package manager |
+
+### D. Billing config checklist
+
+- Plans declared in `shopify.server.ts` with `BillingInterval.Every30Days` (or Annual), `USD`, trial days.
+- `isTest: true` on development stores / non-production.
+- Never ship production builds that rely on the public-distribution bypass.
+
+---
+
+## 11. API Throttling & GraphQL Cost Management
+
+* Shopify enforces a leaky-bucket rate limit based on GraphQL query cost (maximum 1,000 cost points per shop, replenishing at 50 points/second).
+* **No Unbounded Parallelism:** Never wrap bulk Shopify GraphQL mutations in unthrottled `Promise.all([...])`.
+* Process batch operations sequentially or in controlled chunks (e.g., maximum 3-5 concurrent calls) to avoid triggering `MAX_COST_EXCEEDED` HTTP 429 errors.
+
+---
+
+### The Complete Checklist
+
+With this billing addition, the rules cover every gatekeeper requirement for the Shopify App review process:
+
+1. **Architecture:** Embedded iframe + App Bridge v4 + Polaris v12+ / Polaris web components (match the official template).
+2. **Data Protocol:** Admin GraphQL exclusively (no deprecated REST).
+3. **App Store Review Gates:** All 3 mandatory GDPR/Privacy webhooks (`customers/data_request`, `customers/redact`, `shop/redact`) + `app/uninstalled`.
+4. **Backend Resilience:** Webhook deduplication (idempotency), step-by-step state logging (`RECEIVED`, `PROCESSING`, `SUCCESS`, `SKIPPED`, `FAILED`), and GraphQL rate-limit safety.
+5. **Security & Privacy:** Zero-PII storage policy and a Neon Postgres schema.
+6. **Commercialization:** Native Shopify subscription billing; Public distribution for Billing API; safe local bypass only when distribution blocks billing.
+
+---
+
+## 12. App Store Submission & Review Safety
+
+- **Upsert on Installation:** Always use `prisma.appSettings.upsert(...)` instead of `create` when saving merchant configurations to guarantee smooth uninstallation and re-installation cycles.
+- **Mandatory Empty States:** Never render empty tables or blank screens. If a list/log is empty, always render a Polaris `<EmptyState>` component guiding the merchant on what action to take next.
+- **Responsive Layout:** Embedded apps must render cleanly inside both desktop viewports and the Shopify Mobile Admin app (no hardcoded pixel widths; use Polaris responsive grid/layout props).
+- **Error Boundaries:** Implement Remix root and route `ErrorBoundary` components so that any runtime exception displays a friendly Polaris `<Banner tone="critical">` rather than a blank white screen.
+
+There are **three final technical requirements** that need to be added to `.cursorrules`. If omitted, Cursor frequently introduces bugs that trigger immediate App Store rejections:
+
+1. **The "No Theme Bloat" Rule (Theme App Extensions):** If your app ever displays anything on the storefront, Shopify strictly bans modifying `theme.liquid` directly or using legacy `ScriptTag` APIs. It must use Theme App Extensions so zero orphaned code remains upon uninstall.
+2. **Cookie-less Session Tokens (Safari / Chrome Iframe Isolation):** Modern browsers block third-party cookies inside iframes. The app must rely entirely on App Bridge Session Tokens (JWTs).
+3. **App Bridge Navigation:** Standard HTML `<a>` links or hard `window.location.href` redirects break out of the embedded iframe and trigger review rejections.
+
+---
+
+### The Final Addendum for `.cursorrules`
+
+Append this block to complete your ruleset:
+
+```markdown
+---
+
+## 13. Storefront Extensions & Theme Integrity
+- **Zero Direct Theme Modifications:** NEVER inject code into `theme.liquid` or use legacy `ScriptTag` APIs.
+- **Theme App Extensions Only:** If the app renders any storefront UI (widgets, badges, banners), implement it strictly via Shopify CLI Theme App Extensions (App Embed blocks). When uninstalled, an app must leave zero leftover scripts in the merchant's theme.
+
+---
+
+## 14. Cookie-less Iframe Authentication & Session Tokens
+- **Third-Party Cookie Restrictions:** Browsers (Safari, Chrome) block cross-site cookies inside the Shopify Admin iframe.
+- **No Cookie Relying Routes:** Never implement custom cookie-based session middleware (e.g., `express-session` or standard HTTP cookies). Rely strictly on App Bridge session tokens (JWT) and `@shopify/shopify-app-remix` token exchange to maintain user state.
+- **Content Security Policy (CSP):** Ensure response headers include `frame-ancestors https://[shop].myshopify.com https://admin.shopify.com` to prevent clickjacking while allowing Shopify to embed the app.
+
+---
+
+## 15. In-App Navigation & App Bridge Primitives
+- **Internal Navigation:** Do NOT use native `<a href="...">` tags or `window.location.href` for navigation within the Shopify admin. Use Remix `<Link>` or Polaris navigation hooks to preserve the App Bridge session context without reloading the parent iframe.
+- **Title Bar & Action Buttons:** Use the `<ui-title-bar>` web component (or App Bridge `TitleBar`) for the top action buttons (e.g., "Save", "Settings") rather than floating custom headers.
+- **Support & Feedback Channel:** Every embedded app must include a visible link or button for merchant support (e.g., mailto or contact modal) accessible directly inside the UI.
+
+---
+
+## 16. API Versioning Standard
+- Never hardcode deprecated or arbitrary API version strings.
+- Always import and reference `LATEST_API_VERSION` from `@shopify/shopify-api` in `shopify.server.ts` to ensure the app stays on supported quarterly release cycles.
+
+---
+
+## 17. Automated Testing & Handover Gate (Mandatory)
+
+### A. Test-first workflow (preferred)
+
+For every new behavior (webhook pipeline branches, settings upsert, billing gate helpers, GDPR/uninstall side effects, GraphQL `userErrors` handling):
+
+1. **Write the failing automated test first** (unit and/or route/integration).
+2. **Implement the minimum code** to make that test pass.
+3. **Refactor** only while keeping the suite green.
+4. Do **not** ship a feature slice with “tests later.”
+
+If a thin throwaway spike is needed to learn an API shape, discard or rewrite it behind tests before considering the slice done.
+
+### B. What must be covered by automated tests
+
+- **Webhook / business logic:** threshold qualify vs skip; `isEnabled` false; missing settings; idempotent duplicate `orders/create`; `tagsAdd` success path; `tagsAdd` `userErrors` → `FAILED`; GDPR redact deletes shop data; uninstall invalidates sessions / marks `isInstalled`.
+- **Settings persistence:** loader defaults + action upsert for `AppSettings` (no PII assertions).
+- **Billing helpers:** plan config present; unpaid path requests billing (mock `billing.require` / `billing.request` — do not hit live Shopify in CI).
+- Prefer pure functions / extracted services for tagging decision + audit state machine so tests do not require a live Admin session.
+
+### C. Tooling
+
+- Use the template’s test runner when present (e.g. Vitest/Jest). If the scaffold has none, add Vitest + a `test` script in `package.json` in the first feature slice that needs it.
+- Mock Shopify `admin.graphql`, `authenticate.admin`, and `authenticate.webhook` — never call production APIs from unit tests.
+- Use Prisma test doubles, never the live Neon database, in automated tests.
+
+### D. Handover rule (non-negotiable)
+
+Before handing any slice or the full app back to the user:
+
+1. Run the full automated suite (`npm test` or the project’s equivalent).
+2. If **any** test fails: **fix the failure**, re-run until **all automated tests pass**.
+3. Only then hand over. Summarize what passed and which manual CLI/browser gates (if any) remain for the user.
+4. Never say “done” or ask the user to verify code that still has failing automated tests.
+
+Manual Shopify CLI / Admin smoke tests (tunnel, charge approval, live webhook trigger) remain **in addition to** automated tests — they do not replace them.
+
+---
+
+### Summary of What These Rules Enforce
+
+With these sections in place, the agent will:
+
+* Scrape no PII and implement the 3 GDPR webhook routes.
+* Guard against duplicate orders with idempotent database pipelines.
+* Ensure backward-compatible Prisma migrations on Neon Postgres.
+* Restrict mutations to GraphQL with explicit `userErrors` checking.
+* Handle Shopify Native Billing with test mode support.
+* Require Public (App Store) distribution for Billing API; use a shared `requireAppSubscription` helper with **non-production-only** bypass when Shopify returns the public-distribution error; never bypass in production.
+* Scaffold with `application_url` usable for relative webhooks, `shopify.web.toml`, Protected Customer Data Step 1, and resilient TOML config tests.
+* Guard against re-install crashes via Prisma upserts.
+* Prevent iframe breakout bugs and third-party cookie blocking.
+* Write tests first (preferred), run the automated suite before every handover, and fix failures before asking the user to review.
