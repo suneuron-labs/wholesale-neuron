@@ -1,7 +1,16 @@
 import path from "path";
 import fs from "fs";
 import { describe, beforeAll, test, expect } from "vitest";
-import { buildFunction, getFunctionInfo, loadSchema, loadInputQuery, loadFixture, validateTestAssets, runFunction } from "@shopify/shopify-function-test-helpers";
+import { exec } from "child_process";
+import { promisify } from "util";
+import { loadSchema, loadInputQuery, loadFixture, validateTestAssets, runFunction } from "@shopify/shopify-function-test-helpers";
+
+const execAsync = promisify(exec);
+
+async function getFunctionInfo(functionDir) {
+  const { stdout } = await execAsync("npx shopify app function info --json", { cwd: functionDir });
+  return JSON.parse(stdout.slice(stdout.indexOf("{")).trim());
+}
 
 describe("Default Integration Test", () => {
   let schema;
@@ -14,7 +23,7 @@ describe("Default Integration Test", () => {
 
   beforeAll(async () => {
     functionDir = path.dirname(__dirname);
-    await buildFunction(functionDir);
+    await execAsync("npx shopify app function build", { cwd: functionDir });
     functionInfo = await getFunctionInfo(functionDir);
     ({ schemaPath, functionRunnerPath, wasmPath, targeting } = functionInfo);
     schema = await loadSchema(schemaPath);
