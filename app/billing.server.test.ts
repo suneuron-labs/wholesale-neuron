@@ -212,3 +212,126 @@ describe("requireAppSubscription", () => {
     expect(subscriptionIsTest({ NODE_ENV: "production" }, false)).toBe(false);
   });
 });
+
+describe("requireAppSubscription verification vs charge creation", () => {
+  function billingWithRequire(requireImpl: (options: {
+    plans: string[];
+    isTest?: boolean;
+    onFailure: (error: unknown) => Promise<Response>;
+  }) => Promise<unknown>) {
+    return {
+      check: vi.fn(),
+      require: vi.fn(requireImpl),
+      request: vi.fn().mockResolvedValue(new Response(null, { status: 302 })),
+    };
+  }
+
+  it("production Staff store: verifies with test-inclusive check and accepts an active Test subscription", async () => {
+    const billing = billingWithRequire(async () => ({
+      hasActivePayment: true,
+    }));
+
+    const result = await requireAppSubscription(billing, {
+      NODE_ENV: "production",
+    });
+
+    expect(billing.require).toHaveBeenCalledWith(
+      expect.objectContaining({ plans: [BASIC_MONTHLY_PLAN], isTest: true }),
+    );
+    expect(billing.request).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      billingActive: true,
+      billingBypassed: false,
+      bypassReason: null,
+    });
+  });
+
+  it("production Staff store: still requests a Live charge when no subscription exists", async () => {
+    const billing = billingWithRequire(async (options) => {
+      await options.onFailure(new Error("Billing check failed"));
+      throw new Error("redirect");
+    });
+
+    await expect(
+      requireAppSubscription(billing, { NODE_ENV: "production" }),
+    ).rejects.toThrow("redirect");
+
+    expect(billing.require).toHaveBeenCalledWith(
+      expect.objectContaining({ isTest: true }),
+    );
+    expect(billing.request).toHaveBeenCalledWith({
+      plan: BASIC_MONTHLY_PLAN,
+      isTest: false,
+      trialDays: BILLING_TRIAL_DAYS,
+    });
+  });
+
+  it("production Staff store with SIMULATE_STAFF_STORE=1: verification still accepts Test and Live, charge stays Live", async () => {
+    const billing = billingWithRequire(async () => ({
+      hasActivePayment: true,
+    }));
+
+    const result = await requireAppSubscription(billing, {
+      NODE_ENV: "production",
+      SIMULATE_STAFF_STORE: "1",
+    });
+
+    expect(billing.require).toHaveBeenCalledWith(
+      expect.objectContaining({ isTest: true }),
+    );
+    expect(billing.request).not.toHaveBeenCalled();
+    expect(result.billingActive).toBe(true);
+  });
+
+  it("production Partner Development store: verification is test-inclusive and charge is a Test charge", async () => {
+    const billing = billingWithRequire(async (options) => {
+      await options.onFailure(new Error("Billing check failed"));
+      throw new Error("redirect");
+    });
+
+    await expect(
+      requireAppSubscription(
+        billing,
+        { NODE_ENV: "production" },
+        { partnerDevelopment: true },
+      ),
+    ).rejects.toThrow("redirect");
+
+    expect(billing.require).toHaveBeenCalledWith(
+      expect.objectContaining({ isTest: true }),
+    );
+    expect(billing.request).toHaveBeenCalledWith({
+      plan: BASIC_MONTHLY_PLAN,
+      isTest: true,
+      trialDays: BILLING_TRIAL_DAYS,
+    });
+  });
+
+  it("unpaid, declined, or reinstalled store: missing subscription triggers the approval redirect", async () => {
+    const redirect = new Response(null, {
+      status: 302,
+      headers: { Location: "https://admin.shopify.com/charge/approve" },
+    });
+    const billing = {
+      check: vi.fn(),
+      require: vi.fn(async (options: {
+        onFailure: (error: unknown) => Promise<Response>;
+      }) => {
+        throw await options.onFailure(new Error("Billing check failed"));
+      }),
+      request: vi.fn().mockResolvedValue(redirect),
+    };
+
+    const thrown = await requireAppSubscription(billing, {
+      NODE_ENV: "production",
+      SIMULATE_STAFF_STORE: "1",
+    }).catch((error: unknown) => error);
+
+    expect(thrown).toBe(redirect);
+    expect(billing.request).toHaveBeenCalledWith({
+      plan: BASIC_MONTHLY_PLAN,
+      isTest: false,
+      trialDays: BILLING_TRIAL_DAYS,
+    });
+  });
+});

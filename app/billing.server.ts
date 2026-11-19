@@ -111,12 +111,13 @@ export async function requireAppSubscription(
   const partnerDevelopment = options?.partnerDevelopment ?? false;
   // TODO: REMOVE BEFORE RESUBMIT - SIMULATE_STAFF_STORE reproduction switch.
   const simulateStaffStore = env.SIMULATE_STAFF_STORE === "1";
-  // Simulation: verify as a non-partner shop (Live only in production), but
-  // still request the charge as test for the Partner Development store.
-  const verifyIsTest = subscriptionIsTest(
-    env,
-    simulateStaffStore ? false : partnerDevelopment,
-  );
+  // Verification must accept any active subscription for the plan, Live or Test.
+  // In the installed @shopify/shopify-api, check() keeps a subscription when
+  // `isTest || !subscription.test`, so isTest: true never excludes Live charges.
+  // This is independent of partnerDevelopment and SIMULATE_STAFF_STORE.
+  const verifyIsTest = true;
+  // Charge creation: Test charge for Partner Development / non-production,
+  // Live charge for all other production stores.
   const requestIsTest = subscriptionIsTest(env, partnerDevelopment);
 
   console.info(
