@@ -15,6 +15,8 @@ const DEV_BILLING_BYPASS_REASON =
 export type AppEnv = {
   NODE_ENV?: string;
   ENFORCE_BILLING?: string;
+  // TODO: REMOVE BEFORE RESUBMIT - temporary reproduction switch for Warehouse 2 loop.
+  SIMULATE_STAFF_STORE?: string;
 };
 
 export type SubscriptionGate = {
@@ -106,13 +108,32 @@ export async function requireAppSubscription(
   env: AppEnv = process.env,
   options?: { partnerDevelopment?: boolean },
 ): Promise<SubscriptionGate> {
-  const isTest = subscriptionIsTest(env, options?.partnerDevelopment);
+  const partnerDevelopment = options?.partnerDevelopment ?? false;
+  // TODO: REMOVE BEFORE RESUBMIT - SIMULATE_STAFF_STORE reproduction switch.
+  const simulateStaffStore = env.SIMULATE_STAFF_STORE === "1";
+  // Simulation: verify as a non-partner shop (Live only in production), but
+  // still request the charge as test for the Partner Development store.
+  const verifyIsTest = subscriptionIsTest(
+    env,
+    simulateStaffStore ? false : partnerDevelopment,
+  );
+  const requestIsTest = subscriptionIsTest(env, partnerDevelopment);
+
+  console.info(
+    JSON.stringify({
+      event: "billing_check",
+      partnerDevelopment,
+      simulateStaffStore,
+      verifyIsTest,
+      requestIsTest,
+    }),
+  );
 
   try {
     if (!shouldRequestBilling(env)) {
       const check = await billing.check({
         plans: [BASIC_MONTHLY_PLAN],
-        isTest,
+        isTest: verifyIsTest,
       });
       if (check.hasActivePayment) {
         return activeSubscription;
@@ -122,11 +143,11 @@ export async function requireAppSubscription(
 
     await billing.require({
       plans: [BASIC_MONTHLY_PLAN],
-      isTest,
+      isTest: verifyIsTest,
       onFailure: () =>
         billing.request({
           plan: BASIC_MONTHLY_PLAN,
-          isTest,
+          isTest: requestIsTest,
           trialDays: BILLING_TRIAL_DAYS,
         }),
     });
