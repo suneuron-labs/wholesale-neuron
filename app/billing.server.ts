@@ -15,8 +15,6 @@ const DEV_BILLING_BYPASS_REASON =
 export type AppEnv = {
   NODE_ENV?: string;
   ENFORCE_BILLING?: string;
-  // TODO: REMOVE BEFORE RESUBMIT - temporary reproduction switch for Warehouse 2 loop.
-  SIMULATE_STAFF_STORE?: string;
 };
 
 export type SubscriptionGate = {
@@ -109,12 +107,10 @@ export async function requireAppSubscription(
   options?: { partnerDevelopment?: boolean },
 ): Promise<SubscriptionGate> {
   const partnerDevelopment = options?.partnerDevelopment ?? false;
-  // TODO: REMOVE BEFORE RESUBMIT - SIMULATE_STAFF_STORE reproduction switch.
-  const simulateStaffStore = env.SIMULATE_STAFF_STORE === "1";
   // Verification must accept any active subscription for the plan, Live or Test.
   // In the installed @shopify/shopify-api, check() keeps a subscription when
   // `isTest || !subscription.test`, so isTest: true never excludes Live charges.
-  // This is independent of partnerDevelopment and SIMULATE_STAFF_STORE.
+  // This is independent of partnerDevelopment.
   const verifyIsTest = true;
   // Charge creation: Test charge for Partner Development / non-production,
   // Live charge for all other production stores.
@@ -124,7 +120,6 @@ export async function requireAppSubscription(
     JSON.stringify({
       event: "billing_check",
       partnerDevelopment,
-      simulateStaffStore,
       verifyIsTest,
       requestIsTest,
     }),

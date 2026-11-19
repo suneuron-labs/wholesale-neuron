@@ -266,23 +266,6 @@ describe("requireAppSubscription verification vs charge creation", () => {
     });
   });
 
-  it("production Staff store with SIMULATE_STAFF_STORE=1: verification still accepts Test and Live, charge stays Live", async () => {
-    const billing = billingWithRequire(async () => ({
-      hasActivePayment: true,
-    }));
-
-    const result = await requireAppSubscription(billing, {
-      NODE_ENV: "production",
-      SIMULATE_STAFF_STORE: "1",
-    });
-
-    expect(billing.require).toHaveBeenCalledWith(
-      expect.objectContaining({ isTest: true }),
-    );
-    expect(billing.request).not.toHaveBeenCalled();
-    expect(result.billingActive).toBe(true);
-  });
-
   it("production Partner Development store: verification is test-inclusive and charge is a Test charge", async () => {
     const billing = billingWithRequire(async (options) => {
       await options.onFailure(new Error("Billing check failed"));
@@ -324,7 +307,6 @@ describe("requireAppSubscription verification vs charge creation", () => {
 
     const thrown = await requireAppSubscription(billing, {
       NODE_ENV: "production",
-      SIMULATE_STAFF_STORE: "1",
     }).catch((error: unknown) => error);
 
     expect(thrown).toBe(redirect);
